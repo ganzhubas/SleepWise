@@ -6,6 +6,7 @@ import 'package:screen_brightness/screen_brightness.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/sleep_sample.dart';
+import '../../services/notification_service.dart';
 import '../../services/sleep_tracking_service.dart';
 import 'widgets/sound_visualizer.dart';
 import 'widgets/stop_tracking_sheet.dart';
@@ -184,6 +185,9 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
       builder: (_) => StopTrackingSheet(
         onStop: () async {
           Navigator.pop(context); // close sheet
+
+          // Cancel fallback alarm — user woke up normally
+          await NotificationService.instance.cancelFallbackAlarm();
 
           // Stop tracking and get session data
           final session = await _trackingService.stopTracking();

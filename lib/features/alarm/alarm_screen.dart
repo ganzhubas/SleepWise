@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../widgets/gradient_background.dart';
 import '../../models/sleep_session.dart';
+import '../../services/notification_service.dart';
 import '../morning_report/morning_report_screen.dart';
 import '../sleep_tracking/sleep_tracking_screen.dart';
 import 'widgets/start_button.dart';
@@ -91,6 +92,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
   }
 
   Future<void> _onStart() async {
+    // Schedule fallback alarm at upper bound of wake window (safety net)
+    await NotificationService.instance.scheduleFallbackAlarm(
+      alarmTime: _alarmTime,
+    );
+
     final session = await Navigator.of(context).push<SleepSession>(
       MaterialPageRoute(
         builder: (_) => SleepTrackingScreen(

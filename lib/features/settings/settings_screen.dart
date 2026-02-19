@@ -5,6 +5,7 @@ import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../services/health_service.dart';
+import '../../services/notification_service.dart';
 import '../../widgets/gradient_background.dart';
 import 'widgets/settings_group.dart';
 import 'widgets/settings_tile.dart';
@@ -41,7 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // Tracking
   String _micSensitivity = 'medium';
   bool _bedtimeReminder = false;
-  final TimeOfDay _reminderTime = const TimeOfDay(hour: 23, minute: 0);
+  TimeOfDay _reminderTime = const TimeOfDay(hour: 23, minute: 0);
 
   // Integrations
   bool _healthSync = false;
@@ -67,6 +68,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     try {
       final settings = await _settingsRepo.getSettings();
       if (!mounted) return;
+
+      // Restore bedtime reminder state
+      if (settings.bedtimeReminder) {
+        setState(() {
+          _bedtimeReminder = true;
+          _reminderTime = TimeOfDay(
+            hour: settings.reminderHour,
+            minute: settings.reminderMinute,
+          );
+        });
+      }
+
       if (settings.healthConnect) {
         final hasPerms = await HealthService.instance.hasPermissions();
         if (mounted) {
@@ -181,6 +194,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
       });
       await _settingsRepo.updateSettings(
         (s) => s.copyWith(samsungHealth: false),
+      );
+    }
+  }
+
+  Future<void> _toggleBedtimeReminder(bool enable) async {
+    if (enable) {
+      // Let the user pick a time first
+      final picked = await showTimePicker(
+        context: context,
+        initialTime: _reminderTime,
+        builder: (ctx, child) => Theme(
+          data: Theme.of(ctx).copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: AppColors.calmBlue,
+              surface: AppColors.darkSurface,
+            ),
+          ),
+          child: child!,
+        ),
+      );
+      if (picked == null || !mounted) return;
+
+      setState(() {
+        _bedtimeReminder = true;
+        _reminderTime = picked;
+      });
+
+      await NotificationService.instance.scheduleBedtimeReminder(
+        hour: picked.hour,
+        minute: picked.minute,
+      );
+      await _settingsRepo.updateSettings(
+        (s) => s.copyWith(
+          bedtimeReminder: true,
+          reminderHour: picked.hour,
+          reminderMinute: picked.minute,
+        ),
+      );
+    } else {
+      setState(() => _bedtimeReminder = false);
+      await NotificationService.instance.cancelBedtimeReminder();
+      await _settingsRepo.updateSettings(
+        (s) => s.copyWith(bedtimeReminder: false),
       );
     }
   }
@@ -402,7 +458,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ? '${_reminderTime.hour.toString().padLeft(2, '0')}:${_reminderTime.minute.toString().padLeft(2, '0')}'
               : null,
           value: _bedtimeReminder,
-          onChanged: (v) => setState(() => _bedtimeReminder = v),
+          onChanged: (v) => _toggleBedtimeReminder(v),
           isLast: true,
         ),
       ],

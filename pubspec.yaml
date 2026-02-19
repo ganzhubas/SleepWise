@@ -29,8 +29,9 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
 
-  # Notifications
+  # Notifications & scheduling
   flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.0
 
   # Localization / date formatting
   intl: ^0.19.0
