@@ -42,12 +42,14 @@ class WidgetShowcaseScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppDimensions.paddingM),
               const Center(
-                child: TimeDisplay(
-                  hours: 23,
-                  minutes: 45,
-                  use24HourFormat: false,
-                  fontSize: 48,
-                  color: AppColors.calmBlue,
+                child: FittedBox(
+                  child: TimeDisplay(
+                    hours: 23,
+                    minutes: 45,
+                    use24HourFormat: false,
+                    fontSize: 48,
+                    color: AppColors.calmBlue,
+                  ),
                 ),
               ),
               const SizedBox(height: AppDimensions.paddingXL),
@@ -55,13 +57,18 @@ class WidgetShowcaseScreen extends StatelessWidget {
               // --- SleepScoreCircle ---
               _SectionTitle('SleepScoreCircle'),
               const SizedBox(height: AppDimensions.paddingM),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SleepScoreCircle(score: 92, size: 120),
-                  SleepScoreCircle(score: 65, size: 120),
-                  SleepScoreCircle(score: 35, size: 120),
-                ],
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final circleSize = (constraints.maxWidth - 32) / 3;
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SleepScoreCircle(score: 92, size: circleSize),
+                      SleepScoreCircle(score: 65, size: circleSize),
+                      SleepScoreCircle(score: 35, size: circleSize),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: AppDimensions.paddingXL),
 
