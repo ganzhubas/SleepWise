@@ -6,8 +6,10 @@ import '../features/wake_up/wake_up_screen.dart';
 import '../features/morning_report/morning_report_screen.dart';
 import '../features/statistics/statistics_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/showcase/widget_showcase_screen.dart';
 
 class AppRouter {
+  static const String showcase = '/showcase';
   static const String onboarding = '/onboarding';
   static const String alarm = '/alarm';
   static const String sleepTracking = '/sleep-tracking';
@@ -18,6 +20,8 @@ class AppRouter {
 
   static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
+      case showcase:
+        return MaterialPageRoute(builder: (_) => const WidgetShowcaseScreen());
       case onboarding:
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case alarm:
