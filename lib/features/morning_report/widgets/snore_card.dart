@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import 'sleep_card.dart';
 
 /// Card showing snore percentage and hourly mini bar chart.
@@ -17,13 +18,14 @@ class SnoreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     final pct = snorePercent ?? 12;
 
     // Scale test hourly bars proportionally if real data
     final scaleFactor = snorePercent != null ? pct / 12.0 : 1.0;
 
     return SleepCard(
-      title: 'Храп',
+      title: l.snore,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -40,7 +42,7 @@ class SnoreCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'ночи',
+                l.ofNight,
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 14,

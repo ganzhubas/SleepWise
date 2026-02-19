@@ -9,6 +9,7 @@ import 'widgets/chart_illustration.dart';
 import 'widgets/moon_illustration.dart';
 import 'widgets/page_indicator.dart';
 import 'widgets/phone_illustration.dart';
+import '../../l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -51,6 +52,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
@@ -72,7 +74,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(AppDimensions.paddingS),
                         child: Text(
-                          'Пропустить',
+                          l.skip,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: AppColors.moonlight.withValues(alpha: 0.5),
                               ),
@@ -89,10 +91,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   controller: _pageController,
                   onPageChanged: (page) => setState(() => _currentPage = page),
                   children: [
-                    _buildPage1(context),
-                    _buildPage2(context),
-                    _buildPage3(context),
-                    _buildPage4(context),
+                    _buildPage1(context, l),
+                    _buildPage2(context, l),
+                    _buildPage3(context, l),
+                    _buildPage4(context, l),
                   ],
                 ),
               ),
@@ -127,7 +129,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildPage1(BuildContext context) {
+  Widget _buildPage1(BuildContext context, L l) {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingXL),
@@ -137,7 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const MoonIllustration(size: 240),
           const SizedBox(height: AppDimensions.paddingXXL),
           Text(
-            'Просыпайтесь легко',
+            l.onboardingTitle1,
             style: theme.textTheme.displayMedium?.copyWith(
               color: AppColors.moonlight,
             ),
@@ -145,7 +147,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: AppDimensions.paddingM),
           Text(
-            'SleepWise анализирует ваш сон\nи будит в идеальный момент',
+            l.onboardingSubtitle1,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: AppColors.moonlight.withValues(alpha: 0.6),
               height: 1.5,
@@ -157,7 +159,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildPage2(BuildContext context) {
+  Widget _buildPage2(BuildContext context, L l) {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingXL),
@@ -167,7 +169,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const PhoneIllustration(size: 240),
           const SizedBox(height: AppDimensions.paddingXXL),
           Text(
-            'Просто положите\nтелефон рядом',
+            l.onboardingTitle2,
             style: theme.textTheme.displayMedium?.copyWith(
               color: AppColors.moonlight,
             ),
@@ -175,7 +177,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: AppDimensions.paddingM),
           Text(
-            'Микрофон определит фазы сна\nпо звукам движения',
+            l.onboardingSubtitle2,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: AppColors.moonlight.withValues(alpha: 0.6),
               height: 1.5,
@@ -187,7 +189,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildPage3(BuildContext context) {
+  Widget _buildPage3(BuildContext context, L l) {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingXL),
@@ -197,7 +199,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const ChartIllustration(size: 240),
           const SizedBox(height: AppDimensions.paddingXXL),
           Text(
-            'Ваш сон в деталях',
+            l.onboardingTitle3,
             style: theme.textTheme.displayMedium?.copyWith(
               color: AppColors.moonlight,
             ),
@@ -205,7 +207,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: AppDimensions.paddingM),
           Text(
-            'Понятные графики и оценка\nкаждое утро',
+            l.onboardingSubtitle3,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: AppColors.moonlight.withValues(alpha: 0.6),
               height: 1.5,
@@ -217,7 +219,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildPage4(BuildContext context) {
+  Widget _buildPage4(BuildContext context, L l) {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingXL),
@@ -246,7 +248,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: AppDimensions.paddingXXL),
           Text(
-            'Всё готово!',
+            l.onboardingTitle4,
             style: theme.textTheme.displayMedium?.copyWith(
               color: AppColors.moonlight,
             ),
@@ -254,7 +256,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: AppDimensions.paddingM),
           Text(
-            'Настройте будильник и ложитесь\nспать спокойно',
+            l.onboardingSubtitle4,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: AppColors.moonlight.withValues(alpha: 0.6),
               height: 1.5,
@@ -263,14 +265,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: AppDimensions.paddingXXL),
           SleepButton(
-            label: 'Начать',
+            label: l.start,
             onPressed: _completeOnboarding,
             variant: SleepButtonVariant.primary,
             width: double.infinity,
           ),
           const SizedBox(height: AppDimensions.paddingM),
           Text(
-            'Приложение попросит доступ к микрофону\nи уведомлениям',
+            l.onboardingDisclaimer,
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.moonlight.withValues(alpha: 0.35),
               height: 1.4,

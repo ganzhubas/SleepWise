@@ -1,0 +1,284 @@
+{
+  "@@locale": "ru",
+
+  "appName": "SleepWise",
+
+  "skip": "Пропустить",
+  "cancel": "Отмена",
+  "done": "Готово",
+  "allow": "Разрешить",
+  "openSettings": "Открыть настройки",
+  "notNow": "Не сейчас",
+  "later": "Позже",
+  "understood": "Понятно",
+  "start": "Начать",
+
+  "onboardingTitle1": "Просыпайтесь легко",
+  "onboardingSubtitle1": "SleepWise анализирует ваш сон\nи будит в идеальный момент",
+  "onboardingTitle2": "Просто положите\nтелефон рядом",
+  "onboardingSubtitle2": "Микрофон определит фазы сна\nпо звукам движения",
+  "onboardingTitle3": "Ваш сон в деталях",
+  "onboardingSubtitle3": "Понятные графики и оценка\nкаждое утро",
+  "onboardingTitle4": "Всё готово!",
+  "onboardingSubtitle4": "Настройте будильник и ложитесь\nспать спокойно",
+  "onboardingDisclaimer": "Приложение попросит доступ к микрофону\nи уведомлениям",
+
+  "permMicTitle": "Доступ к микрофону",
+  "permMicAllowed": "SleepWise слушает только звуки движения\nдля анализа фаз сна. Аудио не записывается.",
+  "permMicDenied": "Без микрофона анализ сна невозможен.\nВы можете разрешить доступ в настройках.",
+  "permPrivacy": "Подробнее о приватности",
+  "permNotifTitle": "Уведомления",
+  "permNotifAllowed": "Чтобы будильник точно сработал,\nдаже если приложение свёрнуто",
+  "permNotifDenied": "Будильник может не сработать без уведомлений.\nВы можете включить их в настройках.",
+
+  "greetingMorning": "Доброе утро",
+  "greetingDay": "Добрый день",
+  "greetingEvening": "Добрый вечер",
+  "greetingNight": "Доброй ночи",
+
+  "alarmInMinutes": "Будильник через {minutes} мин",
+  "@alarmInMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "alarmInHours": "Будильник через {hours} ч",
+  "@alarmInHours": {
+    "placeholders": {
+      "hours": {"type": "int"}
+    }
+  },
+  "alarmInHoursMinutes": "Будильник через {hours} ч {minutes} мин",
+  "@alarmInHoursMinutes": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "minutes": {"type": "int"}
+    }
+  },
+  "alarmBetween": "Будильник сработает между {start} и {end}",
+  "@alarmBetween": {
+    "placeholders": {
+      "start": {"type": "String"},
+      "end": {"type": "String"}
+    }
+  },
+  "wakeWindowLabel": "Окно пробуждения: {minutes} мин",
+  "@wakeWindowLabel": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "alarmTimeTitle": "Время будильника",
+
+  "activitySilence": "ТИШИНА",
+  "activityLightSleep": "ЛЁГКИЙ СОН",
+  "activityMedium": "АКТИВНОСТЬ",
+  "activityAwake": "БОДРСТВОВАНИЕ",
+  "activitySnoring": "ХРАП",
+  "sleepTracking": "Отслеживание сна",
+  "alarmRange": "Будильник: {start} – {end}",
+  "@alarmRange": {
+    "placeholders": {
+      "start": {"type": "String"},
+      "end": {"type": "String"}
+    }
+  },
+  "battery": "Батарея: {percent}%",
+  "@battery": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+
+  "stopTrackingTitle": "Остановить отслеживание?",
+  "stopTrackingSubtitle": "Данные сна будут сохранены",
+  "stopButton": "Остановить",
+  "continueButton": "Продолжить",
+
+  "goodMorning": "Доброе утро!",
+  "snoozeButton": "Отложить на 5 мин",
+  "snoozeRemaining": "Осталось {remaining} из {total}",
+  "@snoozeRemaining": {
+    "placeholders": {
+      "remaining": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "noSnoozeLeft": "Откладываний больше нет",
+
+  "sleepDurationFormat": "{hours}ч {minutes}мин",
+  "@sleepDurationFormat": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "minutes": {"type": "int"}
+    }
+  },
+  "sleepTimeLabel": "Время сна",
+  "fellAsleep": "Заснул",
+  "wokeUp": "Проснулся",
+  "inBed": "В кровати",
+  "awakenings": "Пробуждений",
+  "hypnogram": "Гипнограмма",
+  "snore": "Храп",
+  "ofNight": "ночи",
+  "scoreExcellent": "Отличный сон",
+  "scoreGood": "Хороший сон",
+  "scoreAverage": "Средний сон",
+  "scorePoor": "Плохой сон",
+
+  "stageDeep": "Глубокий",
+  "stageLight": "Лёгкий",
+  "stageRem": "REM",
+  "stageAwake": "Бодрств.",
+
+  "recommendationExcellent": "Отличная ночь! Вы заснули быстро и спали стабильно. Попробуйте ложиться в это же время каждый день для стабильного режима.",
+  "recommendationGood": "Неплохой сон, но есть куда расти. Попробуйте ложиться на 30 минут раньше и уменьшить экранное время перед сном.",
+  "recommendationPoor": "Этой ночью сон мог быть лучше. Обратите внимание на режим дня, избегайте кофеина после 16:00 и создайте комфортные условия.",
+
+  "statistics": "Статистика",
+  "period7days": "7 дней",
+  "period30days": "30 дней",
+  "period3months": "3 мес",
+  "avgSleepTime": "Среднее время сна",
+  "avgBedtime": "Среднее засыпание",
+  "bestDay": "Лучший день",
+  "snoreAvg": "{percent}% в среднем",
+  "@snoreAvg": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+
+  "weekdayShortMon": "Пн",
+  "weekdayShortTue": "Вт",
+  "weekdayShortWed": "Ср",
+  "weekdayShortThu": "Чт",
+  "weekdayShortFri": "Пт",
+  "weekdayShortSat": "Сб",
+  "weekdayShortSun": "Вс",
+
+  "weekdayMon": "Понедельник",
+  "weekdayTue": "Вторник",
+  "weekdayWed": "Среда",
+  "weekdayThu": "Четверг",
+  "weekdayFri": "Пятница",
+  "weekdaySat": "Суббота",
+  "weekdaySun": "Воскресенье",
+
+  "settings": "Настройки",
+  "settingsAlarm": "Будильник",
+  "settingsMelody": "Мелодия будильника",
+  "settingsVolume": "Громкость",
+  "settingsWakeWindow": "Окно пробуждения",
+  "settingsSnooze": "Snooze",
+  "settingsSnoozeDesc": "5 мин, макс 3 раза",
+  "settingsTracking": "Отслеживание",
+  "settingsSensitivity": "Чувствительность",
+  "settingsReminder": "Напоминание",
+  "settingsIntegrations": "Интеграции",
+  "settingsAppearance": "Оформление",
+  "settingsTheme": "Тема",
+  "themeDark": "Тёмная",
+  "themeLight": "Светлая",
+  "themeAuto": "Авто",
+  "settingsLanguage": "Язык",
+  "langRu": "Рус",
+  "langEn": "Eng",
+  "settingsAccount": "Аккаунт",
+  "restorePurchases": "Восстановить покупки",
+  "settingsAbout": "О приложении",
+  "privacyPolicy": "Политика конфиденциальности",
+  "termsOfUse": "Условия использования",
+  "rateApp": "Оценить приложение",
+  "version": "Версия",
+
+  "sensitivityLow": "Low",
+  "sensitivityMed": "Med",
+  "sensitivityHigh": "High",
+
+  "healthNotConnected": "Не подключено",
+  "healthConnected": "Подключено",
+  "healthNoPermission": "Нет разрешений",
+  "healthDenied": "Доступ отклонён",
+  "healthUnavailable": "Недоступно",
+  "healthConnecting": "Подключение...",
+  "healthViaConnect": "Через Health Connect",
+  "healthFailed": "Не удалось подключить",
+  "healthConnectNotFound": "Health Connect не найден",
+  "healthPermSnackbar": "Разрешите доступ к {platform} в настройках устройства",
+  "@healthPermSnackbar": {
+    "placeholders": {
+      "platform": {"type": "String"}
+    }
+  },
+  "healthUnavailableTitle": "{name} недоступен",
+  "@healthUnavailableTitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "healthConnectInstall": "Установите приложение Health Connect из Google Play для синхронизации данных о сне.",
+  "healthAppleCheck": "Убедитесь, что приложение «Здоровье» доступно на вашем устройстве.",
+  "samsungHealthTitle": "Samsung Health",
+  "samsungHealthInstructions": "На новых устройствах Samsung Health синхронизируется через Google Health Connect.\n\n1. Установите Health Connect из Google Play\n2. Откройте Samsung Health → Настройки → Health Connect\n3. Разрешите синхронизацию данных\n4. Вернитесь сюда и включите переключатель",
+  "sleepDataLabel": "Данные сна",
+  "autoWrite": "Автозапись",
+  "off": "Выкл",
+
+  "minutesShort": "{m} мин",
+  "@minutesShort": {
+    "placeholders": {
+      "m": {"type": "int"}
+    }
+  },
+
+  "melodyVibration": "Вибрация",
+
+  "paywallTitle": "Раскройте весь\nпотенциал сна",
+  "paywallSubtitle": "Всё для идеального сна в одном месте",
+  "paywallFeature1": "Полная история сна без ограничений",
+  "paywallFeature2": "Расширенная аналитика и тренды",
+  "paywallFeature3": "Расписание по дням недели",
+  "paywallFeature4": "Детальный анализ храпа",
+  "paywallFeature5": "Дополнительные мелодии",
+  "paywallFeature6": "Экспорт данных",
+  "paywallFeature7": "Без рекламы",
+  "planMonthly": "Месячная",
+  "planMonthlyPrice": "99 ₽/мес",
+  "planYearly": "Годовая",
+  "planYearlyPrice": "649 ₽/год",
+  "planYearlyBadge": "−45%",
+  "finePrintYearly": "Затем 649 ₽/год. Отмена в любое время.",
+  "finePrintMonthly": "Затем 99 ₽/мес. Отмена в любое время.",
+  "tryFree": "Попробовать 7 дней бесплатно",
+  "tryFreeBanner": "Попробовать бесплатно",
+
+  "proBannerFeature1": "Подробная аналитика сна",
+  "proBannerFeature2": "Умный будильник с ИИ",
+  "proBannerFeature3": "Неограниченная история",
+  "proBannerFeature4": "Экспорт данных",
+  "proBannerFeature5": "Без рекламы",
+
+  "batteryOptTitle": "Оптимизация батареи",
+  "batteryOptMessage": "Устройства {brand} могут завершать работу приложений в фоновом режиме.\n\nДля надёжной работы будильника отключите оптимизацию батареи для SleepWise в настройках устройства.\n\nПодробнее: dontkillmyapp.com",
+  "@batteryOptMessage": {
+    "placeholders": {
+      "brand": {"type": "String"}
+    }
+  },
+  "batteryManualInstructions": "Откройте Настройки → Батарея → SleepWise → Без ограничений",
+
+  "notifAlarmChannel": "Будильник",
+  "notifAlarmDesc": "Будильник SleepWise — страховочное уведомление",
+  "notifReminderChannel": "Напоминания",
+  "notifReminderDesc": "Напоминание ложиться спать",
+  "notifAlarmTitle": "Пора просыпаться!",
+  "notifAlarmBody": "Ваш будильник SleepWise сработал",
+  "notifReminderTitle": "Пора готовиться ко сну",
+  "notifReminderBody": "Установите будильник в SleepWise",
+  "notifSetAlarmAction": "Установить будильник",
+
+  "tabAlarm": "Будильник",
+  "tabStatistics": "Статистика",
+  "tabSettings": "Настройки"
+}

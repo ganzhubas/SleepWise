@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sleepwise/core/theme/app_theme.dart';
 import 'package:sleepwise/features/showcase/widget_showcase_screen.dart';
+
+import 'helpers/localized_app.dart';
 
 void main() {
   testWidgets('Widget showcase golden — top', (WidgetTester tester) async {
@@ -9,11 +10,7 @@ void main() {
     tester.view.devicePixelRatio = 3.0;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const WidgetShowcaseScreen(),
-      ),
+      localizedApp(home: const WidgetShowcaseScreen()),
     );
     await tester.pump(const Duration(milliseconds: 1000));
 
@@ -32,11 +29,7 @@ void main() {
     tester.view.devicePixelRatio = 3.0;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const WidgetShowcaseScreen(),
-      ),
+      localizedApp(home: const WidgetShowcaseScreen()),
     );
     await tester.pump(const Duration(milliseconds: 1000));
 

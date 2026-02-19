@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sleepwise/core/theme/app_theme.dart';
 import 'package:sleepwise/features/onboarding/onboarding_screen.dart';
+
+import 'helpers/localized_app.dart';
 
 void main() {
   Widget buildApp() {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
+    return localizedApp(
+      home: const OnboardingScreen(),
       routes: {
         '/alarm': (_) => const Scaffold(body: Center(child: Text('Alarm'))),
       },
-      home: const OnboardingScreen(),
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../core/theme/app_typography.dart';
+import '../../l10n/app_localizations.dart';
 import '../morning_report/morning_report_screen.dart';
 import 'widgets/sunrise_background.dart';
 import 'widgets/stop_alarm_button.dart';
@@ -146,6 +147,7 @@ class _WakeUpScreenState extends State<WakeUpScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     final timeStr =
         '${_now.hour.toString().padLeft(2, '0')}:${_now.minute.toString().padLeft(2, '0')}';
 
@@ -185,7 +187,7 @@ class _WakeUpScreenState extends State<WakeUpScreen>
                   curve: Curves.easeOut,
                 ),
                 child: Text(
-                  'Доброе утро!',
+                  l.goodMorning,
                   style: TextStyle(
                     fontFamily: 'Montserrat',
                     fontSize: 24,
@@ -221,7 +223,7 @@ class _WakeUpScreenState extends State<WakeUpScreen>
                   child: Column(
                     children: [
                       Text(
-                        'Отложить на 5 мин',
+                        l.snoozeButton,
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 16,
@@ -230,7 +232,7 @@ class _WakeUpScreenState extends State<WakeUpScreen>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Осталось $_snoozeRemaining из ${widget.maxSnoozeCount}',
+                        l.snoozeRemaining(_snoozeRemaining, widget.maxSnoozeCount),
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 12,
@@ -242,7 +244,7 @@ class _WakeUpScreenState extends State<WakeUpScreen>
                 )
               else
                 Text(
-                  'Откладываний больше нет',
+                  l.noSnoozeLeft,
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 14,

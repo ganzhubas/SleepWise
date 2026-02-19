@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sleepwise/core/theme/app_theme.dart';
 import 'package:sleepwise/app/home_shell.dart';
 import 'package:sleepwise/features/alarm/widgets/time_picker_sheet.dart';
 import 'package:sleepwise/features/alarm/widgets/start_button.dart';
+
+import 'helpers/localized_app.dart';
 
 void main() {
   const screenSize = Size(1170, 2532);
@@ -14,11 +15,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const HomeShell(),
-      ),
+      localizedApp(home: const HomeShell()),
     );
     await tester.pump(const Duration(milliseconds: 500));
 
@@ -37,11 +34,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const HomeShell(),
-      ),
+      localizedApp(home: const HomeShell()),
     );
     await tester.pump(const Duration(milliseconds: 500));
 
@@ -69,9 +62,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
+      localizedApp(
         home: Scaffold(
           backgroundColor: Colors.black,
           body: Center(
@@ -99,9 +90,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
+      localizedApp(
         home: Scaffold(
           backgroundColor: const Color(0xFF0D1B2A),
           body: Center(
@@ -128,11 +117,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const HomeShell(),
-      ),
+      localizedApp(home: const HomeShell()),
     );
     await tester.pump(const Duration(milliseconds: 500));
 
@@ -155,11 +140,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const HomeShell(),
-      ),
+      localizedApp(home: const HomeShell()),
     );
     await tester.pump(const Duration(milliseconds: 500));
 

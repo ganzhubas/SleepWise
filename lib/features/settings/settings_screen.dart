@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import '../../app/sleepwise_app.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/repositories/settings_repository.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/health_service.dart';
 import '../../services/notification_service.dart';
 import '../../widgets/gradient_background.dart';
@@ -33,7 +35,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     'classic_bell': 'Classic Bell',
     'rain_to_sun': 'Rain to Sun',
     'zen_garden': 'Zen Garden',
-    'vibration_only': 'Вибрация',
   };
   double _alarmVolume = 0.7;
   int _wakeWindow = 30;
@@ -46,10 +47,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // Integrations
   bool _healthSync = false;
-  String _healthStatus = 'Не подключено';
+  String? _healthStatusKey;
   bool _healthLoading = false;
   bool _samsungHealth = false;
-  String _samsungStatus = 'Не подключено';
+  String? _samsungStatusKey;
   bool _samsungLoading = false;
 
   // Appearance
@@ -61,10 +62,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadHealthStatus();
+    _loadSettings();
   }
 
-  Future<void> _loadHealthStatus() async {
+  Future<void> _loadSettings() async {
     try {
       final settings = await _settingsRepo.getSettings();
       if (!mounted) return;
@@ -80,19 +81,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
         });
       }
 
+      // Restore language
+      if (settings.language.isNotEmpty) {
+        setState(() => _language = settings.language);
+      }
+
       if (settings.healthConnect) {
         final hasPerms = await HealthService.instance.hasPermissions();
         if (mounted) {
           setState(() {
             _healthSync = hasPerms;
-            _healthStatus = hasPerms ? 'Подключено' : 'Нет разрешений';
+            _healthStatusKey = hasPerms ? 'connected' : 'noPermission';
           });
         }
       }
       if (settings.samsungHealth) {
         setState(() {
           _samsungHealth = true;
-          _samsungStatus = 'Через Health Connect';
+          _samsungStatusKey = 'viaConnect';
         });
       }
     } catch (_) {
@@ -100,7 +106,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  String _healthStatusText(L l) {
+    if (_healthLoading) return l.healthConnecting;
+    switch (_healthStatusKey) {
+      case 'connected':
+        return l.healthConnected;
+      case 'noPermission':
+        return l.healthNoPermission;
+      case 'denied':
+        return l.healthDenied;
+      case 'unavailable':
+        return l.healthUnavailable;
+      default:
+        return l.healthNotConnected;
+    }
+  }
+
+  String _samsungStatusText(L l) {
+    if (_samsungLoading) return l.healthConnecting;
+    switch (_samsungStatusKey) {
+      case 'viaConnect':
+        return l.healthViaConnect;
+      case 'failed':
+        return l.healthFailed;
+      case 'notFound':
+        return l.healthConnectNotFound;
+      default:
+        return l.healthNotConnected;
+    }
+  }
+
   Future<void> _toggleHealthSync(bool enable) async {
+    final l = L.of(context);
     if (enable) {
       setState(() => _healthLoading = true);
       final status = await HealthService.instance.requestPermissions();
@@ -110,7 +147,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         case HealthConnectionStatus.connected:
           setState(() {
             _healthSync = true;
-            _healthStatus = 'Подключено';
+            _healthStatusKey = 'connected';
             _healthLoading = false;
           });
           await _settingsRepo.updateSettings(
@@ -119,14 +156,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         case HealthConnectionStatus.denied:
           setState(() {
             _healthSync = false;
-            _healthStatus = 'Доступ отклонён';
+            _healthStatusKey = 'denied';
             _healthLoading = false;
           });
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Разрешите доступ к ${HealthService.instance.platformName} в настройках устройства',
+                  l.healthPermSnackbar(HealthService.instance.platformName),
                   style: const TextStyle(fontFamily: 'Inter'),
                 ),
                 backgroundColor: AppColors.darkSurface,
@@ -136,7 +173,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         case HealthConnectionStatus.unavailable:
           setState(() {
             _healthSync = false;
-            _healthStatus = 'Недоступно';
+            _healthStatusKey = 'unavailable';
             _healthLoading = false;
           });
           if (mounted) _showHealthUnavailableDialog();
@@ -144,7 +181,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } else {
       setState(() {
         _healthSync = false;
-        _healthStatus = 'Не подключено';
+        _healthStatusKey = null;
       });
       await _settingsRepo.updateSettings(
         (s) => s.copyWith(healthConnect: false),
@@ -156,7 +193,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (enable) {
       setState(() => _samsungLoading = true);
 
-      // Samsung Health on modern devices routes through Health Connect
       final available = await HealthService.instance.isHealthConnectAvailable();
       if (!mounted) return;
 
@@ -166,7 +202,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (status == HealthConnectionStatus.connected) {
           setState(() {
             _samsungHealth = true;
-            _samsungStatus = 'Через Health Connect';
+            _samsungStatusKey = 'viaConnect';
             _samsungLoading = false;
           });
           await _settingsRepo.updateSettings(
@@ -175,14 +211,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         } else {
           setState(() {
             _samsungHealth = false;
-            _samsungStatus = 'Не удалось подключить';
+            _samsungStatusKey = 'failed';
             _samsungLoading = false;
           });
         }
       } else {
         setState(() {
           _samsungHealth = false;
-          _samsungStatus = 'Health Connect не найден';
+          _samsungStatusKey = 'notFound';
           _samsungLoading = false;
         });
         if (mounted) _showSamsungFallbackDialog();
@@ -190,7 +226,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } else {
       setState(() {
         _samsungHealth = false;
-        _samsungStatus = 'Не подключено';
+        _samsungStatusKey = null;
       });
       await _settingsRepo.updateSettings(
         (s) => s.copyWith(samsungHealth: false),
@@ -200,7 +236,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _toggleBedtimeReminder(bool enable) async {
     if (enable) {
-      // Let the user pick a time first
       final picked = await showTimePicker(
         context: context,
         initialTime: _reminderTime,
@@ -241,14 +276,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  void _onLanguageChanged(String lang) {
+    setState(() => _language = lang);
+    // Update global locale
+    localeNotifier.value = Locale(lang);
+    _settingsRepo.updateSettings(
+      (s) => s.copyWith(language: lang),
+    );
+  }
+
   void _showHealthUnavailableDialog() {
+    final l = L.of(context);
     final name = Platform.isIOS ? 'Apple Health' : 'Health Connect';
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.darkSurface,
         title: Text(
-          '$name недоступен',
+          l.healthUnavailableTitle(name),
           style: TextStyle(
             fontFamily: 'Montserrat',
             fontWeight: FontWeight.w600,
@@ -256,9 +301,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         content: Text(
-          Platform.isAndroid
-              ? 'Установите приложение Health Connect из Google Play для синхронизации данных о сне.'
-              : 'Убедитесь, что приложение «Здоровье» доступно на вашем устройстве.',
+          Platform.isAndroid ? l.healthConnectInstall : l.healthAppleCheck,
           style: TextStyle(
             fontFamily: 'Inter',
             color: AppColors.moonlight.withValues(alpha: 0.7),
@@ -268,7 +311,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              'Понятно',
+              l.understood,
               style: TextStyle(color: AppColors.calmBlue),
             ),
           ),
@@ -278,12 +321,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showSamsungFallbackDialog() {
+    final l = L.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.darkSurface,
         title: Text(
-          'Samsung Health',
+          l.samsungHealthTitle,
           style: TextStyle(
             fontFamily: 'Montserrat',
             fontWeight: FontWeight.w600,
@@ -291,12 +335,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         content: Text(
-          'На новых устройствах Samsung Health синхронизируется '
-          'через Google Health Connect.\n\n'
-          '1. Установите Health Connect из Google Play\n'
-          '2. Откройте Samsung Health → Настройки → Health Connect\n'
-          '3. Разрешите синхронизацию данных\n'
-          '4. Вернитесь сюда и включите переключатель',
+          l.samsungHealthInstructions,
           style: TextStyle(
             fontFamily: 'Inter',
             height: 1.5,
@@ -307,7 +346,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              'Понятно',
+              l.understood,
               style: TextStyle(color: AppColors.calmBlue),
             ),
           ),
@@ -318,6 +357,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     return GradientBackground(
       showStars: false,
       child: SafeArea(
@@ -333,7 +373,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 0,
               ),
               child: Text(
-                'Настройки',
+                l.settings,
                 style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 28,
@@ -353,17 +393,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 child: Column(
                   children: [
-                    _buildAlarmGroup(),
+                    _buildAlarmGroup(l),
                     const SizedBox(height: AppDimensions.paddingL),
-                    _buildTrackingGroup(),
+                    _buildTrackingGroup(l),
                     const SizedBox(height: AppDimensions.paddingL),
-                    _buildIntegrationsGroup(),
+                    _buildIntegrationsGroup(l),
                     const SizedBox(height: AppDimensions.paddingL),
-                    _buildAppearanceGroup(),
+                    _buildAppearanceGroup(l),
                     const SizedBox(height: AppDimensions.paddingL),
-                    _buildAccountGroup(),
+                    _buildAccountGroup(l),
                     const SizedBox(height: AppDimensions.paddingL),
-                    _buildAboutGroup(),
+                    _buildAboutGroup(l),
                     const SizedBox(height: AppDimensions.paddingXXL),
                   ],
                 ),
@@ -377,22 +417,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // ═══════════════════════════════════════════════════════════════════════════
 
-  Widget _buildAlarmGroup() {
+  String _melodyDisplayName(L l) {
+    if (_melodyId == 'vibration_only') return l.melodyVibration;
+    return _melodyNames[_melodyId] ?? _melodyId;
+  }
+
+  Widget _buildAlarmGroup(L l) {
     return SettingsGroup(
-      label: 'Будильник',
+      label: l.settingsAlarm,
       children: [
         SettingsTile.navigation(
           icon: Icons.music_note_rounded,
           iconBgColor: AppColors.error,
-          title: 'Мелодия будильника',
-          value: _melodyNames[_melodyId] ?? _melodyId,
+          title: l.settingsMelody,
+          value: _melodyDisplayName(l),
           onTap: () => _openMelodyPicker(),
           isFirst: true,
         ),
         SettingsTile(
           icon: Icons.volume_up_rounded,
           iconBgColor: AppColors.calmBlue,
-          title: 'Громкость',
+          title: l.settingsVolume,
           trailing: SizedBox(
             width: 130,
             child: SliderTheme(
@@ -414,15 +459,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SettingsTile.navigation(
           icon: Icons.timelapse_rounded,
           iconBgColor: AppColors.warning,
-          title: 'Окно пробуждения',
-          value: '$_wakeWindow мин',
+          title: l.settingsWakeWindow,
+          value: l.minutesShort(_wakeWindow),
           onTap: () => _showWakeWindowPicker(),
         ),
         SettingsTile.toggle(
           icon: Icons.snooze_rounded,
           iconBgColor: AppColors.dreamPurple,
-          title: 'Snooze',
-          subtitle: _snoozeEnabled ? '5 мин, макс 3 раза' : null,
+          title: l.settingsSnooze,
+          subtitle: _snoozeEnabled ? l.settingsSnoozeDesc : null,
           value: _snoozeEnabled,
           onChanged: (v) => setState(() => _snoozeEnabled = v),
           isLast: true,
@@ -431,20 +476,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildTrackingGroup() {
+  Widget _buildTrackingGroup(L l) {
     return SettingsGroup(
-      label: 'Отслеживание',
+      label: l.settingsTracking,
       children: [
         SettingsTile(
           icon: Icons.mic_rounded,
           iconBgColor: AppColors.success,
-          title: 'Чувствительность',
+          title: l.settingsSensitivity,
           isFirst: true,
           trailing: SegmentOption<String>(
-            options: const {
-              'low': 'Low',
-              'medium': 'Med',
-              'high': 'High',
+            options: {
+              'low': l.sensitivityLow,
+              'medium': l.sensitivityMed,
+              'high': l.sensitivityHigh,
             },
             selected: _micSensitivity,
             onChanged: (v) => setState(() => _micSensitivity = v),
@@ -453,7 +498,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SettingsTile.toggle(
           icon: Icons.bedtime_rounded,
           iconBgColor: AppColors.dreamPurple.withValues(alpha: 0.8),
-          title: 'Напоминание',
+          title: l.settingsReminder,
           subtitle: _bedtimeReminder
               ? '${_reminderTime.hour.toString().padLeft(2, '0')}:${_reminderTime.minute.toString().padLeft(2, '0')}'
               : null,
@@ -465,8 +510,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildIntegrationsGroup() {
-    // Platform-adaptive: show Apple Health on iOS, Health Connect on Android
+  Widget _buildIntegrationsGroup(L l) {
     final isIOS = Platform.isIOS;
     final healthTitle = isIOS ? 'Apple Health' : 'Health Connect';
     final healthIcon = isIOS ? Icons.favorite_rounded : Icons.favorite_rounded;
@@ -475,13 +519,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         : const Color(0xFF4285F4);
 
     return SettingsGroup(
-      label: 'Интеграции',
+      label: l.settingsIntegrations,
       children: [
         SettingsTile.toggle(
           icon: healthIcon,
           iconBgColor: healthColor,
           title: healthTitle,
-          subtitle: _healthLoading ? 'Подключение...' : _healthStatus,
+          subtitle: _healthStatusText(l),
           value: _healthSync,
           onChanged: _healthLoading ? null : _toggleHealthSync,
           isFirst: true,
@@ -490,8 +534,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SettingsTile.toggle(
             icon: Icons.watch_rounded,
             iconBgColor: const Color(0xFF1428A0),
-            title: 'Samsung Health',
-            subtitle: _samsungLoading ? 'Подключение...' : _samsungStatus,
+            title: l.samsungHealthTitle,
+            subtitle: _samsungStatusText(l),
             value: _samsungHealth,
             onChanged: _samsungLoading ? null : _toggleSamsungHealth,
             isLast: true,
@@ -500,10 +544,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SettingsTile(
             icon: Icons.info_outline_rounded,
             iconBgColor: AppColors.moonlight.withValues(alpha: 0.15),
-            title: 'Данные сна',
+            title: l.sleepDataLabel,
             isLast: true,
             trailing: Text(
-              _healthSync ? 'Автозапись' : 'Выкл',
+              _healthSync ? l.autoWrite : l.off,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 13,
@@ -517,20 +561,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildAppearanceGroup() {
+  Widget _buildAppearanceGroup(L l) {
     return SettingsGroup(
-      label: 'Оформление',
+      label: l.settingsAppearance,
       children: [
         SettingsTile(
           icon: Icons.dark_mode_rounded,
           iconBgColor: AppColors.nightSky,
-          title: 'Тема',
+          title: l.settingsTheme,
           isFirst: true,
           trailing: SegmentOption<String>(
-            options: const {
-              'dark': 'Тёмная',
-              'light': 'Светлая',
-              'system': 'Авто',
+            options: {
+              'dark': l.themeDark,
+              'light': l.themeLight,
+              'system': l.themeAuto,
             },
             selected: _theme,
             onChanged: (v) => setState(() => _theme = v),
@@ -539,24 +583,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SettingsTile(
           icon: Icons.language_rounded,
           iconBgColor: AppColors.calmBlue,
-          title: 'Язык',
+          title: l.settingsLanguage,
           isLast: true,
           trailing: SegmentOption<String>(
-            options: const {
-              'ru': 'Рус',
-              'en': 'Eng',
+            options: {
+              'ru': l.langRu,
+              'en': l.langEn,
             },
             selected: _language,
-            onChanged: (v) => setState(() => _language = v),
+            onChanged: _onLanguageChanged,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildAccountGroup() {
+  Widget _buildAccountGroup(L l) {
     return SettingsGroup(
-      label: 'Аккаунт',
+      label: l.settingsAccount,
       children: [
         Padding(
           padding: const EdgeInsets.all(12),
@@ -565,7 +609,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SettingsTile.navigation(
           icon: Icons.restore_rounded,
           iconBgColor: AppColors.calmBlue.withValues(alpha: 0.8),
-          title: 'Восстановить покупки',
+          title: l.restorePurchases,
           onTap: () {},
           isLast: true,
         ),
@@ -573,33 +617,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildAboutGroup() {
+  Widget _buildAboutGroup(L l) {
     return SettingsGroup(
-      label: 'О приложении',
+      label: l.settingsAbout,
       children: [
         SettingsTile.navigation(
           icon: Icons.shield_rounded,
           iconBgColor: AppColors.success.withValues(alpha: 0.8),
-          title: 'Политика конфиденциальности',
+          title: l.privacyPolicy,
           onTap: () {},
           isFirst: true,
         ),
         SettingsTile.navigation(
           icon: Icons.description_rounded,
           iconBgColor: AppColors.warning.withValues(alpha: 0.8),
-          title: 'Условия использования',
+          title: l.termsOfUse,
           onTap: () {},
         ),
         SettingsTile.navigation(
           icon: Icons.star_rounded,
           iconBgColor: AppColors.starYellow,
-          title: 'Оценить приложение',
+          title: l.rateApp,
           onTap: () {},
         ),
         SettingsTile(
           icon: Icons.info_outline_rounded,
           iconBgColor: AppColors.moonlight.withValues(alpha: 0.2),
-          title: 'Версия',
+          title: l.version,
           isLast: true,
           trailing: Text(
             '1.0.0',
@@ -638,6 +682,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showWakeWindowPicker() {
+    final l = L.of(context);
     const options = [10, 20, 30, 45, 60];
     showModalBottomSheet(
       context: context,
@@ -670,7 +715,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     size: 22,
                   ),
                   title: Text(
-                    '$m мин',
+                    l.minutesShort(m),
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 15,

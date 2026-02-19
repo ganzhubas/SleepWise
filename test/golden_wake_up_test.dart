@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sleepwise/core/theme/app_theme.dart';
 import 'package:sleepwise/features/wake_up/wake_up_screen.dart';
 import 'package:sleepwise/features/wake_up/widgets/stop_alarm_button.dart';
 import 'package:sleepwise/features/wake_up/widgets/swipe_to_stop.dart';
+
+import 'helpers/localized_app.dart';
 
 void main() {
   const screenSize = Size(1170, 2532);
@@ -33,11 +34,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const WakeUpScreen(),
-      ),
+      localizedApp(home: const WakeUpScreen()),
     );
     // Early — still night
     await tester.pump(const Duration(milliseconds: 500));
@@ -56,11 +53,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const WakeUpScreen(),
-      ),
+      localizedApp(home: const WakeUpScreen()),
     );
     // Pump past the full 10s sunrise + greeting fade-in
     for (int i = 0; i < 25; i++) {
@@ -81,11 +74,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const WakeUpScreen(useSwipeToStop: true),
-      ),
+      localizedApp(home: const WakeUpScreen(useSwipeToStop: true)),
     );
     // Full sunrise
     for (int i = 0; i < 25; i++) {
@@ -106,9 +95,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
+      localizedApp(
         home: Scaffold(
           backgroundColor: const Color(0xFFFF8C42),
           body: Center(
@@ -133,9 +120,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
+      localizedApp(
         home: Scaffold(
           backgroundColor: const Color(0xFFFF8C42),
           body: Center(

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sleepwise/core/theme/app_theme.dart';
 import 'package:sleepwise/features/onboarding/permissions_screen.dart';
 import 'package:sleepwise/widgets/gradient_background.dart';
+
+import 'helpers/localized_app.dart';
 
 void main() {
   /// Wraps a page body in Scaffold + GradientBackground + SafeArea,
   /// matching the real PermissionsScreen chrome.
   Widget wrapPage(Widget page) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
+    return localizedApp(
       home: Scaffold(
         body: GradientBackground(
           child: SafeArea(child: page),

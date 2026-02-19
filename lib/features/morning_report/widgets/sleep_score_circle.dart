@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Animated circular score gauge that fills from 0 to [score] over [duration].
 class SleepScoreCircle extends StatefulWidget {
@@ -49,15 +50,16 @@ class _SleepScoreCircleState extends State<SleepScoreCircle>
     return AppColors.error;
   }
 
-  static String _scoreLabel(int score) {
-    if (score >= 85) return 'Отличный сон';
-    if (score >= 70) return 'Хороший сон';
-    if (score >= 50) return 'Средний сон';
-    return 'Плохой сон';
+  static String _scoreLabel(int score, L l) {
+    if (score >= 85) return l.scoreExcellent;
+    if (score >= 70) return l.scoreGood;
+    if (score >= 50) return l.scoreAverage;
+    return l.scorePoor;
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     final color = _scoreColor(widget.score);
     return AnimatedBuilder(
       animation: _animation,
@@ -89,7 +91,7 @@ class _SleepScoreCircleState extends State<SleepScoreCircle>
             ),
             const SizedBox(height: 12),
             Text(
-              _scoreLabel(widget.score),
+              _scoreLabel(widget.score, l),
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 16,

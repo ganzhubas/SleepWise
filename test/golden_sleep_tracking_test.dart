@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sleepwise/core/theme/app_theme.dart';
 import 'package:sleepwise/features/sleep_tracking/sleep_tracking_screen.dart';
 import 'package:sleepwise/features/sleep_tracking/widgets/stop_tracking_sheet.dart';
 import 'package:sleepwise/features/sleep_tracking/widgets/sound_visualizer.dart';
+
+import 'helpers/localized_app.dart';
 
 void main() {
   const screenSize = Size(1170, 2532);
@@ -14,9 +15,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
+      localizedApp(
         home: const SleepTrackingScreen(
           alarmTime: TimeOfDay(hour: 7, minute: 0),
           wakeWindow: 30,
@@ -40,9 +39,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
+      localizedApp(
         home: const SleepTrackingScreen(
           alarmTime: TimeOfDay(hour: 7, minute: 0),
           wakeWindow: 30,
@@ -70,9 +67,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
+      localizedApp(
         home: Scaffold(
           backgroundColor: Colors.black,
           body: Center(
@@ -100,9 +95,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
+      localizedApp(
         home: const Scaffold(
           backgroundColor: Colors.black,
           body: Center(

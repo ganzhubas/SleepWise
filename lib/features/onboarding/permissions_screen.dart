@@ -6,6 +6,7 @@ import '../../widgets/gradient_background.dart';
 import '../../widgets/sleep_button.dart';
 import 'widgets/bell_illustration.dart';
 import 'widgets/microphone_illustration.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Permission flow shown after onboarding.
 /// Asks for microphone then notifications, skipping already-granted ones.
@@ -121,6 +122,7 @@ class MicrophonePermPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingXL),
@@ -130,7 +132,7 @@ class MicrophonePermPage extends StatelessWidget {
           const MicrophoneIllustration(size: 200),
           const SizedBox(height: AppDimensions.paddingXXL),
           Text(
-            'Доступ к микрофону',
+            l.permMicTitle,
             style: theme.textTheme.displaySmall?.copyWith(
               color: AppColors.moonlight,
             ),
@@ -139,8 +141,8 @@ class MicrophonePermPage extends StatelessWidget {
           const SizedBox(height: AppDimensions.paddingM),
           Text(
             denied
-                ? 'Без микрофона анализ сна невозможен.\nВы можете разрешить доступ в настройках.'
-                : 'SleepWise слушает только звуки движения\nдля анализа фаз сна. Аудио не записывается.',
+                ? l.permMicDenied
+                : l.permMicAllowed,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: AppColors.moonlight.withValues(alpha: 0.6),
               height: 1.5,
@@ -149,7 +151,7 @@ class MicrophonePermPage extends StatelessWidget {
           ),
           const SizedBox(height: AppDimensions.paddingXL),
           SleepButton(
-            label: denied ? 'Открыть настройки' : 'Разрешить',
+            label: denied ? l.openSettings : l.allow,
             onPressed: denied ? openAppSettings : onAllow,
             variant: SleepButtonVariant.primary,
             width: double.infinity,
@@ -160,7 +162,7 @@ class MicrophonePermPage extends StatelessWidget {
               // Placeholder — could open a privacy policy page
             },
             child: Text(
-              'Подробнее о приватности',
+              l.permPrivacy,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: AppColors.calmBlue.withValues(alpha: 0.7),
               ),
@@ -191,6 +193,7 @@ class NotificationPermPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingXL),
@@ -200,7 +203,7 @@ class NotificationPermPage extends StatelessWidget {
           const BellIllustration(size: 200),
           const SizedBox(height: AppDimensions.paddingXXL),
           Text(
-            'Уведомления',
+            l.permNotifTitle,
             style: theme.textTheme.displaySmall?.copyWith(
               color: AppColors.moonlight,
             ),
@@ -209,8 +212,8 @@ class NotificationPermPage extends StatelessWidget {
           const SizedBox(height: AppDimensions.paddingM),
           Text(
             denied
-                ? 'Будильник может не сработать без уведомлений.\nВы можете включить их в настройках.'
-                : 'Чтобы будильник точно сработал,\nдаже если приложение свёрнуто',
+                ? l.permNotifDenied
+                : l.permNotifAllowed,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: AppColors.moonlight.withValues(alpha: 0.6),
               height: 1.5,
@@ -219,14 +222,14 @@ class NotificationPermPage extends StatelessWidget {
           ),
           const SizedBox(height: AppDimensions.paddingXL),
           SleepButton(
-            label: denied ? 'Открыть настройки' : 'Разрешить',
+            label: denied ? l.openSettings : l.allow,
             onPressed: denied ? openAppSettings : onAllow,
             variant: SleepButtonVariant.primary,
             width: double.infinity,
           ),
           const SizedBox(height: AppDimensions.paddingM),
           SleepButton(
-            label: 'Не сейчас',
+            label: l.notNow,
             onPressed: onSkip,
             variant: SleepButtonVariant.text,
           ),

@@ -4,6 +4,7 @@ import '../../core/constants/app_dimensions.dart';
 import '../../core/constants/app_durations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../l10n/app_localizations.dart';
 import '../../widgets/gradient_background.dart';
 import '../../models/sleep_session.dart';
 import '../../services/notification_service.dart';
@@ -42,39 +43,40 @@ class _AlarmScreenState extends State<AlarmScreen> {
   }
 
   // Greeting based on hour
-  String get _greeting {
+  String _greeting(L l) {
     final hour = _now.hour;
-    if (hour >= 5 && hour < 12) return 'Доброе утро';
-    if (hour >= 12 && hour < 18) return 'Добрый день';
-    if (hour >= 18 && hour < 23) return 'Добрый вечер';
-    return 'Доброй ночи';
+    if (hour >= 5 && hour < 12) return l.greetingMorning;
+    if (hour >= 12 && hour < 18) return l.greetingDay;
+    if (hour >= 18 && hour < 23) return l.greetingEvening;
+    return l.greetingNight;
   }
 
   // "Alarm in X h Y min"
-  String get _timeUntilAlarm {
+  String _timeUntilAlarm(L l) {
     final nowMin = _now.hour * 60 + _now.minute;
     final alarmMin = _alarmTime.hour * 60 + _alarmTime.minute;
     var diff = alarmMin - nowMin;
     if (diff <= 0) diff += 24 * 60;
     final h = diff ~/ 60;
     final m = diff % 60;
-    if (h == 0) return 'Будильник через $m мин';
-    if (m == 0) return 'Будильник через $h ч';
-    return 'Будильник через $h ч $m мин';
+    if (h == 0) return l.alarmInMinutes(m);
+    if (m == 0) return l.alarmInHours(h);
+    return l.alarmInHoursMinutes(h, m);
   }
 
   // Wake window range string
-  String get _wakeRange {
+  String _wakeRange(L l) {
     final endMin = _alarmTime.hour * 60 + _alarmTime.minute;
     final startMin = endMin - _wakeWindow;
     final sh = ((startMin % (24 * 60)) ~/ 60) % 24;
     final sm = (startMin % (24 * 60)) % 60;
     final eh = _alarmTime.hour;
     final em = _alarmTime.minute;
-    return 'Будильник сработает между '
-        '${sh.toString().padLeft(2, '0')}:${sm.toString().padLeft(2, '0')}'
-        ' и '
+    final startFormatted =
+        '${sh.toString().padLeft(2, '0')}:${sm.toString().padLeft(2, '0')}';
+    final endFormatted =
         '${eh.toString().padLeft(2, '0')}:${em.toString().padLeft(2, '0')}';
+    return l.alarmBetween(startFormatted, endFormatted);
   }
 
   void _openTimePicker() {
@@ -119,6 +121,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = L.of(context);
+
+    final timeUntilAlarm = _timeUntilAlarm(l);
 
     return GradientBackground(
       child: SafeArea(
@@ -135,7 +140,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
             ),
             const SizedBox(height: AppDimensions.paddingXS),
             Text(
-              _greeting,
+              _greeting(l),
               style: theme.textTheme.titleLarge?.copyWith(
                 color: AppColors.moonlight.withValues(alpha: 0.8),
               ),
@@ -153,8 +158,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
                   AnimatedSwitcher(
                     duration: AppDurations.normal,
                     child: Text(
-                      _timeUntilAlarm,
-                      key: ValueKey(_timeUntilAlarm),
+                      timeUntilAlarm,
+                      key: ValueKey(timeUntilAlarm),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: AppColors.calmBlue.withValues(alpha: 0.7),
                       ),
@@ -168,7 +173,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
             // Wake window section
             Text(
-              'Окно пробуждения: $_wakeWindow мин',
+              l.wakeWindowLabel(_wakeWindow),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: AppColors.moonlight.withValues(alpha: 0.5),
               ),
@@ -180,7 +185,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
             ),
             const SizedBox(height: AppDimensions.paddingS),
             Text(
-              _wakeRange,
+              _wakeRange(l),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: AppColors.moonlight.withValues(alpha: 0.3),
               ),

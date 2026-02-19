@@ -3,6 +3,7 @@ import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../data/repositories/sleep_repository.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/sleep_phase.dart';
 import '../../models/sleep_session.dart';
 import '../../services/health_service.dart';
@@ -71,12 +72,12 @@ class _MorningReportScreenState extends State<MorningReportScreen>
 
   int get _score => widget.session?.score ?? 82;
 
-  String get _sleepDuration {
-    if (widget.session == null) return '7ч 24мин';
+  String _sleepDuration(L l) {
+    if (widget.session == null) return l.sleepDurationFormat(7, 24);
     final dur = widget.session!.duration;
     final h = dur.inHours;
     final m = dur.inMinutes % 60;
-    return '$hч $mмин';
+    return l.sleepDurationFormat(h, m);
   }
 
   String get _bedtimeStr {
@@ -91,12 +92,12 @@ class _MorningReportScreenState extends State<MorningReportScreen>
     return '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
   }
 
-  String get _inBedDuration {
-    if (widget.session == null) return '7ч 38мин';
+  String _inBedDuration(L l) {
+    if (widget.session == null) return l.sleepDurationFormat(7, 38);
     final dur = widget.session!.duration;
     final h = dur.inHours;
     final m = dur.inMinutes % 60;
-    return '$hч $mмин';
+    return l.sleepDurationFormat(h, m);
   }
 
   String get _awakenings {
@@ -119,21 +120,15 @@ class _MorningReportScreenState extends State<MorningReportScreen>
 
   DateTime? get _bedtime => widget.session?.bedtime;
 
-  String get _recommendation {
+  String _recommendation(L l) {
     final score = _score;
     if (score >= 80) {
-      return 'Отличная ночь! Вы заснули быстро и спали стабильно. '
-          'Попробуйте ложиться в это же время каждый день '
-          'для стабильного режима.';
+      return l.recommendationExcellent;
     }
     if (score >= 60) {
-      return 'Неплохой сон, но есть куда расти. '
-          'Попробуйте ложиться на 30 минут раньше '
-          'и уменьшить экранное время перед сном.';
+      return l.recommendationGood;
     }
-    return 'Этой ночью сон мог быть лучше. '
-        'Обратите внимание на режим дня, '
-        'избегайте кофеина после 16:00 и создайте комфортные условия.';
+    return l.recommendationPoor;
   }
 
   /// Build a staggered animation for item at [index] out of [total].
@@ -149,6 +144,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     const totalItems = 7;
 
     return Scaffold(
@@ -169,7 +165,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
                     // ── Hero section ───────────────────────────────
                     _StaggeredItem(
                       animation: _staggerAnimation(0, totalItems),
-                      child: _buildHeroSection(),
+                      child: _buildHeroSection(l),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingL),
@@ -178,7 +174,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
                     _StaggeredItem(
                       animation: _staggerAnimation(1, totalItems),
                       child: SleepCard(
-                        title: 'Гипнограмма',
+                        title: l.hypnogram,
                         child: HypnogramChart(
                           phases: _phases,
                           bedtime: _bedtime,
@@ -191,7 +187,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
                     // ── Metrics 2×2 ────────────────────────────────
                     _StaggeredItem(
                       animation: _staggerAnimation(2, totalItems),
-                      child: _buildMetricsGrid(),
+                      child: _buildMetricsGrid(l),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingM),
@@ -207,7 +203,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
                     // ── Recommendation ─────────────────────────────
                     _StaggeredItem(
                       animation: _staggerAnimation(4, totalItems),
-                      child: _buildRecommendation(),
+                      child: _buildRecommendation(l),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingXL),
@@ -240,9 +236,9 @@ class _MorningReportScreenState extends State<MorningReportScreen>
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Готово',
-                      style: TextStyle(
+                    child: Text(
+                      l.done,
+                      style: const TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -258,7 +254,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
     );
   }
 
-  Widget _buildHeroSection() {
+  Widget _buildHeroSection(L l) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingXL),
@@ -278,7 +274,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
           SleepScoreCircle(score: _score),
           const SizedBox(height: 20),
           Text(
-            _sleepDuration,
+            _sleepDuration(l),
             style: TextStyle(
               fontFamily: 'Montserrat',
               fontSize: 28,
@@ -288,7 +284,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
           ),
           const SizedBox(height: 4),
           Text(
-            'Время сна',
+            l.sleepTimeLabel,
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 14,
@@ -300,7 +296,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
     );
   }
 
-  Widget _buildMetricsGrid() {
+  Widget _buildMetricsGrid(L l) {
     return Column(
       children: [
         Row(
@@ -308,7 +304,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
             Expanded(
               child: MetricCard(
                 icon: Icons.nightlight_round,
-                label: 'Заснул',
+                label: l.fellAsleep,
                 value: _bedtimeStr,
                 iconColor: AppColors.dreamPurple.withValues(alpha: 0.7),
               ),
@@ -317,7 +313,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
             Expanded(
               child: MetricCard(
                 icon: Icons.wb_sunny_rounded,
-                label: 'Проснулся',
+                label: l.wokeUp,
                 value: _wakeTimeStr,
                 iconColor: AppColors.starYellow.withValues(alpha: 0.8),
               ),
@@ -330,15 +326,15 @@ class _MorningReportScreenState extends State<MorningReportScreen>
             Expanded(
               child: MetricCard(
                 icon: Icons.bed_rounded,
-                label: 'В кровати',
-                value: _inBedDuration,
+                label: l.inBed,
+                value: _inBedDuration(l),
               ),
             ),
             const SizedBox(width: AppDimensions.paddingM),
             Expanded(
               child: MetricCard(
                 icon: Icons.visibility_outlined,
-                label: 'Пробуждений',
+                label: l.awakenings,
                 value: _awakenings,
                 iconColor: AppColors.warning.withValues(alpha: 0.7),
               ),
@@ -349,7 +345,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
     );
   }
 
-  Widget _buildRecommendation() {
+  Widget _buildRecommendation(L l) {
     final score = _score;
     final color = score >= 80
         ? AppColors.success
@@ -370,7 +366,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              _recommendation,
+              _recommendation(l),
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 14,

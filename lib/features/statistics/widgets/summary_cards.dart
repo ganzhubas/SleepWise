@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
+import '../../../l10n/app_localizations.dart';
 import '../models/sleep_stats_data.dart';
 
 /// Horizontal scrolling strip of summary metric cards.
@@ -26,6 +27,7 @@ class SummaryCards extends StatelessWidget {
   Widget build(BuildContext context) {
     if (data.isEmpty) return const SizedBox.shrink();
 
+    final l = L.of(context);
     final avgHours = SleepStatsData.averageHours(data);
     final avgBedtime = SleepStatsData.averageBedtime(data);
     final best = SleepStatsData.bestDay(data);
@@ -34,28 +36,28 @@ class SummaryCards extends StatelessWidget {
     final items = <_SummaryItem>[
       _SummaryItem(
         icon: Icons.schedule_rounded,
-        label: 'Среднее время сна',
+        label: l.avgSleepTime,
         value: _formatHours(avgHours),
         color: AppColors.calmBlue,
       ),
       _SummaryItem(
         icon: Icons.nightlight_round,
-        label: 'Среднее засыпание',
+        label: l.avgBedtime,
         value: _formatBedtime(avgBedtime),
         color: AppColors.dreamPurple,
       ),
       if (best != null)
         _SummaryItem(
           icon: Icons.emoji_events_rounded,
-          label: 'Лучший день',
+          label: l.bestDay,
           value:
               '${SleepStatsData.weekdayFullRu(best.date.weekday)} (${best.score})',
           color: AppColors.starYellow,
         ),
       _SummaryItem(
         icon: Icons.volume_up_rounded,
-        label: 'Храп',
-        value: '${avgSnore.round()}% в среднем',
+        label: l.snore,
+        value: l.snoreAvg(avgSnore.round()),
         color: AppColors.warning,
       ),
     ];
@@ -68,7 +70,7 @@ class SummaryCards extends StatelessWidget {
         padding:
             const EdgeInsets.symmetric(horizontal: AppDimensions.paddingM),
         itemCount: items.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, i) => _buildCard(items[i]),
       ),
     );

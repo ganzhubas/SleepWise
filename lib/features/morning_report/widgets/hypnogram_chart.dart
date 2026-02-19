@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../models/sleep_phase.dart';
 
 /// Sleep stage hypnogram using fl_chart AreaChart.
@@ -37,8 +38,6 @@ class HypnogramChart extends StatelessWidget {
     2: AppColors.dreamPurple,
     3: Color(0xFFE07A5F),
   };
-
-  static const _stageLabels = ['Глубокий', 'Лёгкий', 'REM', 'Бодрств.'];
 
   List<_Stage> _buildData() {
     if (phases == null || phases!.isEmpty) return _testData;
@@ -78,6 +77,8 @@ class HypnogramChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
+    final stageLabels = [l.stageDeep, l.stageLight, l.stageRem, l.stageAwake];
     final data = _buildData();
     final maxX = data.isEmpty ? 480.0 : data.last.minute.toDouble();
 
@@ -98,7 +99,7 @@ class HypnogramChart extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                _stageLabels[i],
+                stageLabels[i],
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 10,
@@ -131,7 +132,7 @@ class HypnogramChart extends StatelessWidget {
                       final idx = val.round();
                       if (idx < 0 || idx > 3) return const SizedBox.shrink();
                       if ((val - idx).abs() > 0.1) return const SizedBox.shrink();
-                      final label = _stageLabels[idx];
+                      final label = stageLabels[idx];
                       return Text(
                         label,
                         style: TextStyle(

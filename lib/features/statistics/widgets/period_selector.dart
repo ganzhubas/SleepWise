@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 
 enum StatsPeriod { week, month, threeMonths }
 
@@ -14,14 +15,15 @@ class PeriodSelector extends StatelessWidget {
     required this.onChanged,
   });
 
-  static const _labels = {
-    StatsPeriod.week: '7 дней',
-    StatsPeriod.month: '30 дней',
-    StatsPeriod.threeMonths: '3 мес',
-  };
-
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
+    final labels = {
+      StatsPeriod.week: l.period7days,
+      StatsPeriod.month: l.period30days,
+      StatsPeriod.threeMonths: l.period3months,
+    };
+
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
@@ -61,7 +63,7 @@ class PeriodSelector extends StatelessWidget {
                           ? AppColors.calmBlue
                           : AppColors.moonlight.withValues(alpha: 0.4),
                     ),
-                    child: Text(_labels[period]!),
+                    child: Text(labels[period]!),
                   ),
                 ),
               ),

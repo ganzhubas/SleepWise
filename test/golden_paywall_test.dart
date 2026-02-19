@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sleepwise/core/theme/app_theme.dart';
 import 'package:sleepwise/features/paywall/paywall_screen.dart';
+
+import 'helpers/localized_app.dart';
 
 void main() {
   const screenSize = Size(1170, 2532);
@@ -12,11 +13,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const PaywallScreen(),
-      ),
+      localizedApp(home: const PaywallScreen()),
     );
     await tester.pump(const Duration(milliseconds: 1800));
 
@@ -34,11 +31,7 @@ void main() {
     tester.view.devicePixelRatio = pixelRatio;
 
     await tester.pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.dark,
-        home: const PaywallScreen(),
-      ),
+      localizedApp(home: const PaywallScreen()),
     );
     await tester.pump(const Duration(milliseconds: 1800));
 

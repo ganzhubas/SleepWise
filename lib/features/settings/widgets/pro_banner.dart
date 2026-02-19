@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// SleepWise Pro upgrade banner with gradient background and feature list.
 class ProBanner extends StatelessWidget {
@@ -10,6 +11,15 @@ class ProBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
+    final features = [
+      l.proBannerFeature1,
+      l.proBannerFeature2,
+      l.proBannerFeature3,
+      l.proBannerFeature4,
+      l.proBannerFeature5,
+    ];
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -68,7 +78,7 @@ class ProBanner extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             // Feature list
-            ..._features.map((f) => Padding(
+            ...features.map((f) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
                     children: [
@@ -107,9 +117,9 @@ class ProBanner extends StatelessWidget {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'Попробовать бесплатно',
-                  style: TextStyle(
+                child: Text(
+                  l.tryFreeBanner,
+                  style: const TextStyle(
                     fontFamily: 'Montserrat',
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -122,12 +132,4 @@ class ProBanner extends StatelessWidget {
       ),
     );
   }
-
-  static const _features = [
-    'Подробная аналитика сна',
-    'Умный будильник с ИИ',
-    'Неограниченная история',
-    'Экспорт данных',
-    'Без рекламы',
-  ];
 }

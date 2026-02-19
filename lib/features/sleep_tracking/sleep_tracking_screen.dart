@@ -5,6 +5,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/sleep_sample.dart';
 import '../../services/notification_service.dart';
 import '../../services/sleep_tracking_service.dart';
@@ -50,7 +51,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
   final SleepTrackingService _trackingService = SleepTrackingService();
   StreamSubscription<SleepSample>? _sampleSub;
   double _liveRms = 0;
-  String? _classificationLabel;
+  ActivityLevel? _classification;
 
   @override
   void initState() {
@@ -87,7 +88,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
         if (mounted) {
           setState(() {
             _liveRms = sample.rms;
-            _classificationLabel = _labelForActivity(sample.classification);
+            _classification = sample.classification;
           });
         }
       });
@@ -96,13 +97,13 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
     }
   }
 
-  static String _labelForActivity(ActivityLevel level) {
+  String _labelForActivity(ActivityLevel level, L l) {
     return switch (level) {
-      ActivityLevel.silence => 'ТИШИНА',
-      ActivityLevel.lowActivity => 'ЛЁГКИЙ СОН',
-      ActivityLevel.mediumActivity => 'АКТИВНОСТЬ',
-      ActivityLevel.highActivity => 'БОДРСТВОВАНИЕ',
-      ActivityLevel.snoring => 'ХРАП',
+      ActivityLevel.silence => l.activitySilence,
+      ActivityLevel.lowActivity => l.activityLightSleep,
+      ActivityLevel.mediumActivity => l.activityMedium,
+      ActivityLevel.highActivity => l.activityAwake,
+      ActivityLevel.snoring => l.activitySnoring,
     };
   }
 
@@ -204,21 +205,27 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
   }
 
   // ── Alarm range string ─────────────────────────────────────────────────
-  String get _alarmRange {
+  String _alarmRange(L l) {
     final endMin = widget.alarmTime.hour * 60 + widget.alarmTime.minute;
     final startMin = endMin - widget.wakeWindow;
     final sh = ((startMin % (24 * 60)) ~/ 60) % 24;
     final sm = (startMin % (24 * 60)) % 60;
     final eh = widget.alarmTime.hour;
     final em = widget.alarmTime.minute;
-    return 'Будильник: '
-        '${sh.toString().padLeft(2, '0')}:${sm.toString().padLeft(2, '0')}'
-        ' – '
+    final startFormatted =
+        '${sh.toString().padLeft(2, '0')}:${sm.toString().padLeft(2, '0')}';
+    final endFormatted =
         '${eh.toString().padLeft(2, '0')}:${em.toString().padLeft(2, '0')}';
+    return l.alarmRange(startFormatted, endFormatted);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
+    final classificationLabel = _classification != null
+        ? _labelForActivity(_classification!, l)
+        : null;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: GestureDetector(
@@ -256,7 +263,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
               // ── Sound visualizer with live data ─────────────
               SoundVisualizer(
                 liveRms: _liveRms,
-                classificationLabel: _classificationLabel,
+                classificationLabel: classificationLabel,
               ),
 
               const SizedBox(height: 40),
@@ -281,7 +288,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Отслеживание сна',
+                        l.sleepTracking,
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 12,
@@ -302,7 +309,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
                 child: Column(
                   children: [
                     Text(
-                      _alarmRange,
+                      _alarmRange(l),
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 11,
@@ -311,7 +318,7 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Батарея: $_batteryPercent%',
+                      l.battery(_batteryPercent),
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 11,

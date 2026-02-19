@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Full-screen paywall for SleepWise Pro subscription.
 class PaywallScreen extends StatefulWidget {
@@ -46,7 +47,18 @@ class _PaywallScreenState extends State<PaywallScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     const totalItems = 12;
+
+    final features = <_Feature>[
+      _Feature(Icons.history_rounded, l.paywallFeature1),
+      _Feature(Icons.insights_rounded, l.paywallFeature2),
+      _Feature(Icons.calendar_month_rounded, l.paywallFeature3),
+      _Feature(Icons.mic_rounded, l.paywallFeature4),
+      _Feature(Icons.music_note_rounded, l.paywallFeature5),
+      _Feature(Icons.upload_file_rounded, l.paywallFeature6),
+      _Feature(Icons.block_rounded, l.paywallFeature7),
+    ];
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -106,7 +118,7 @@ class _PaywallScreenState extends State<PaywallScreen>
                       _StaggeredItem(
                         animation: _stagger(1, totalItems),
                         child: Text(
-                          'Раскройте весь\nпотенциал сна',
+                          l.paywallTitle,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Montserrat',
@@ -123,7 +135,7 @@ class _PaywallScreenState extends State<PaywallScreen>
                       _StaggeredItem(
                         animation: _stagger(1, totalItems),
                         child: Text(
-                          'Всё для идеального сна в одном месте',
+                          l.paywallSubtitle,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',
@@ -136,7 +148,7 @@ class _PaywallScreenState extends State<PaywallScreen>
                       const SizedBox(height: 32),
 
                       // Features list
-                      ..._features.asMap().entries.map((e) {
+                      ...features.asMap().entries.map((e) {
                         return _StaggeredItem(
                           animation: _stagger(2 + e.key, totalItems),
                           child: _FeatureRow(
@@ -155,8 +167,8 @@ class _PaywallScreenState extends State<PaywallScreen>
                           children: [
                             Expanded(
                               child: _PlanCard(
-                                title: 'Месячная',
-                                price: '99 ₽/мес',
+                                title: l.planMonthly,
+                                price: l.planMonthlyPrice,
                                 isSelected: _selectedPlan == 0,
                                 onTap: () =>
                                     setState(() => _selectedPlan = 0),
@@ -165,9 +177,9 @@ class _PaywallScreenState extends State<PaywallScreen>
                             const SizedBox(width: 12),
                             Expanded(
                               child: _PlanCard(
-                                title: 'Годовая',
-                                price: '649 ₽/год',
-                                badge: '−45%',
+                                title: l.planYearly,
+                                price: l.planYearlyPrice,
+                                badge: l.planYearlyBadge,
                                 isSelected: _selectedPlan == 1,
                                 isBestValue: true,
                                 onTap: () =>
@@ -193,8 +205,8 @@ class _PaywallScreenState extends State<PaywallScreen>
                         animation: _stagger(11, totalItems),
                         child: Text(
                           _selectedPlan == 1
-                              ? 'Затем 649 ₽/год. Отмена в любое время.'
-                              : 'Затем 99 ₽/мес. Отмена в любое время.',
+                              ? l.finePrintYearly
+                              : l.finePrintMonthly,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',
@@ -212,7 +224,7 @@ class _PaywallScreenState extends State<PaywallScreen>
                         child: TextButton(
                           onPressed: () {},
                           child: Text(
-                            'Восстановить покупки',
+                            l.restorePurchases,
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 13,
@@ -245,16 +257,6 @@ class _Feature {
   final String text;
   const _Feature(this.icon, this.text);
 }
-
-const _features = <_Feature>[
-  _Feature(Icons.history_rounded, 'Полная история сна без ограничений'),
-  _Feature(Icons.insights_rounded, 'Расширенная аналитика и тренды'),
-  _Feature(Icons.calendar_month_rounded, 'Расписание по дням недели'),
-  _Feature(Icons.mic_rounded, 'Детальный анализ храпа'),
-  _Feature(Icons.music_note_rounded, 'Дополнительные мелодии'),
-  _Feature(Icons.upload_file_rounded, 'Экспорт данных'),
-  _Feature(Icons.block_rounded, 'Без рекламы'),
-];
 
 // ═════════════════════════════════════════════════════════════════════════════
 // PRO badge with glow effect
@@ -561,6 +563,7 @@ class _CtaButtonState extends State<_CtaButton>
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     return AnimatedBuilder(
       animation: _pulseController,
       builder: (context, _) {
@@ -591,9 +594,9 @@ class _CtaButtonState extends State<_CtaButton>
               elevation: 0,
               padding: EdgeInsets.zero,
             ),
-            child: const Text(
-              'Попробовать 7 дней бесплатно',
-              style: TextStyle(
+            child: Text(
+              l.tryFree,
+              style: const TextStyle(
                 fontFamily: 'Montserrat',
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

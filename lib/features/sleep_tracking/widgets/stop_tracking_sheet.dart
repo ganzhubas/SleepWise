@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Bottom sheet confirmation dialog for stopping sleep tracking.
 class StopTrackingSheet extends StatelessWidget {
@@ -15,6 +16,7 @@ class StopTrackingSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF111111),
@@ -49,7 +51,7 @@ class StopTrackingSheet extends StatelessWidget {
 
               // Title
               Text(
-                'Остановить отслеживание?',
+                l.stopTrackingTitle,
                 style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 20,
@@ -59,7 +61,7 @@ class StopTrackingSheet extends StatelessWidget {
               ),
               const SizedBox(height: AppDimensions.paddingS),
               Text(
-                'Данные сна будут сохранены',
+                l.stopTrackingSubtitle,
                 style: TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 14,
@@ -84,9 +86,9 @@ class StopTrackingSheet extends StatelessWidget {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'Остановить',
-                    style: TextStyle(
+                  child: Text(
+                    l.stopButton,
+                    style: const TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -114,9 +116,9 @@ class StopTrackingSheet extends StatelessWidget {
                           BorderRadius.circular(AppDimensions.radiusM),
                     ),
                   ),
-                  child: const Text(
-                    'Продолжить',
-                    style: TextStyle(
+                  child: Text(
+                    l.continueButton,
+                    style: const TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

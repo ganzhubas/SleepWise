@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/repositories/sleep_repository.dart';
+import '../../l10n/app_localizations.dart';
 import '../../widgets/gradient_background.dart';
 import 'models/sleep_stats_data.dart';
 import 'widgets/period_selector.dart';
@@ -97,6 +98,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     final data = _getData();
 
     // For average score: current 7 vs previous 7
@@ -127,7 +129,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
                 0,
               ),
               child: Text(
-                'Статистика',
+                l.statistics,
                 style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 28,

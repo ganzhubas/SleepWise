@@ -7,6 +7,7 @@ import '../features/alarm/alarm_screen.dart';
 import '../features/statistics/statistics_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../core/theme/app_colors.dart';
+import '../l10n/app_localizations.dart';
 import '../services/notification_service.dart';
 
 /// Bottom tab shell: Alarm / Statistics / Settings.
@@ -86,7 +87,8 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   Future<void> _showBatteryWarningDialog(String manufacturer) async {
-    String brand = 'вашего устройства';
+    final l = L.of(context);
+    String brand = manufacturer;
     if (manufacturer.contains('xiaomi') ||
         manufacturer.contains('redmi') ||
         manufacturer.contains('poco')) {
@@ -119,7 +121,7 @@ class _HomeShellState extends State<HomeShell> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Оптимизация батареи',
+                l.batteryOptTitle,
                 style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontWeight: FontWeight.w600,
@@ -131,11 +133,7 @@ class _HomeShellState extends State<HomeShell> {
           ],
         ),
         content: Text(
-          'Устройства $brand могут завершать работу приложений '
-          'в фоновом режиме.\n\n'
-          'Для надёжной работы будильника отключите оптимизацию '
-          'батареи для SleepWise в настройках устройства.\n\n'
-          'Подробнее: dontkillmyapp.com',
+          l.batteryOptMessage(brand),
           style: TextStyle(
             fontFamily: 'Inter',
             fontSize: 14,
@@ -147,7 +145,7 @@ class _HomeShellState extends State<HomeShell> {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              'Позже',
+              l.later,
               style: TextStyle(
                 fontFamily: 'Inter',
                 color: AppColors.moonlight.withValues(alpha: 0.5),
@@ -160,7 +158,7 @@ class _HomeShellState extends State<HomeShell> {
               _openBatterySettings();
             },
             child: Text(
-              'Открыть настройки',
+              l.openSettings,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontWeight: FontWeight.w600,
@@ -181,10 +179,11 @@ class _HomeShellState extends State<HomeShell> {
     } catch (_) {
       // Fallback: show a snackbar with manual instructions
       if (mounted) {
+        final l = L.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Откройте Настройки → Батарея → SleepWise → Без ограничений',
+              l.batteryManualInstructions,
               style: TextStyle(fontFamily: 'Inter'),
             ),
             backgroundColor: AppColors.darkSurface,
@@ -197,6 +196,7 @@ class _HomeShellState extends State<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
@@ -226,18 +226,18 @@ class _HomeShellState extends State<HomeShell> {
             elevation: 0,
             selectedFontSize: 11,
             unselectedFontSize: 11,
-            items: const [
+            items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.alarm_rounded),
-                label: 'Будильник',
+                icon: const Icon(Icons.alarm_rounded),
+                label: l.tabAlarm,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.bar_chart_rounded),
-                label: 'Статистика',
+                icon: const Icon(Icons.bar_chart_rounded),
+                label: l.tabStatistics,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings_rounded),
-                label: 'Настройки',
+                icon: const Icon(Icons.settings_rounded),
+                label: l.tabSettings,
               ),
             ],
           ),

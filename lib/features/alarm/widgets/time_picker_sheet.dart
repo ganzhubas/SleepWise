@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Custom dual-drum time picker bottom sheet with hours (0-23) and minutes (0-59).
 class TimePickerSheet extends StatefulWidget {
@@ -43,6 +44,7 @@ class _TimePickerSheetState extends State<TimePickerSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l = L.of(context);
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.darkSurface,
@@ -76,7 +78,7 @@ class _TimePickerSheetState extends State<TimePickerSheet> {
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Text(
-                      'Отмена',
+                      l.cancel,
                       style: TextStyle(
                         color: AppColors.moonlight.withValues(alpha: 0.5),
                         fontSize: 16,
@@ -84,7 +86,7 @@ class _TimePickerSheetState extends State<TimePickerSheet> {
                     ),
                   ),
                   Text(
-                    'Время будильника',
+                    l.alarmTimeTitle,
                     style: TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 16,
@@ -99,9 +101,9 @@ class _TimePickerSheetState extends State<TimePickerSheet> {
                         minute: _selectedMinute,
                       ));
                     },
-                    child: const Text(
-                      'Готово',
-                      style: TextStyle(
+                    child: Text(
+                      l.done,
+                      style: const TextStyle(
                         color: AppColors.calmBlue,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
