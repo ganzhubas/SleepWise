@@ -5,13 +5,16 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../models/sleep_sample.dart';
+import '../../services/sleep_tracking_service.dart';
 import 'widgets/sound_visualizer.dart';
 import 'widgets/stop_tracking_sheet.dart';
 
 /// Night-mode sleep tracking screen.
 ///
 /// Pure black OLED background, ultra-dim clock, pulsing recording indicator,
-/// soft sound visualizer, and swipe-up / double-tap to stop.
+/// soft sound visualizer with real microphone data, and swipe-up / double-tap
+/// to stop.
 class SleepTrackingScreen extends StatefulWidget {
   final TimeOfDay alarmTime;
   final int wakeWindow;
@@ -32,15 +35,21 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
   late Timer _clockTimer;
   DateTime _now = DateTime.now();
 
-  // ── Tap-to-brighten ────────────────────────────────────────────────────
+  // ── Tap-to-brighten ────────────────────────────────────────────────
   late final AnimationController _brightenController;
   Timer? _brightenTimeout;
 
-  // ── Recording indicator pulse ──────────────────────────────────────────
+  // ── Recording indicator pulse ──────────────────────────────────────
   late final AnimationController _pulseController;
 
   // ── Battery ────────────────────────────────────────────────────────────
   int _batteryPercent = 85;
+
+  // ── Audio tracking ─────────────────────────────────────────────────────
+  final SleepTrackingService _trackingService = SleepTrackingService();
+  StreamSubscription<SleepSample>? _sampleSub;
+  double _liveRms = 0;
+  String? _classificationLabel;
 
   @override
   void initState() {
@@ -67,6 +76,33 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
 
     _enableNightMode();
     _readBattery();
+    _startAudioTracking();
+  }
+
+  Future<void> _startAudioTracking() async {
+    try {
+      await _trackingService.startTracking();
+      _sampleSub = _trackingService.liveSamples.listen((sample) {
+        if (mounted) {
+          setState(() {
+            _liveRms = sample.rms;
+            _classificationLabel = _labelForActivity(sample.classification);
+          });
+        }
+      });
+    } catch (_) {
+      // Microphone unavailable — continue with ambient visualization
+    }
+  }
+
+  static String _labelForActivity(ActivityLevel level) {
+    return switch (level) {
+      ActivityLevel.silence => 'ТИШИНА',
+      ActivityLevel.lowActivity => 'ЛЁГКИЙ СОН',
+      ActivityLevel.mediumActivity => 'АКТИВНОСТЬ',
+      ActivityLevel.highActivity => 'БОДРСТВОВАНИЕ',
+      ActivityLevel.snoring => 'ХРАП',
+    };
   }
 
   Future<void> _enableNightMode() async {
@@ -113,6 +149,8 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
     _brightenTimeout?.cancel();
     _brightenController.dispose();
     _pulseController.dispose();
+    _sampleSub?.cancel();
+    _trackingService.dispose();
     _disableNightMode();
     super.dispose();
   }
@@ -144,10 +182,17 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
       backgroundColor: Colors.transparent,
       isDismissible: true,
       builder: (_) => StopTrackingSheet(
-        onStop: () {
+        onStop: () async {
           Navigator.pop(context); // close sheet
-          _disableNightMode();
-          Navigator.pop(context); // back to alarm
+
+          // Stop tracking and get session data
+          final session = await _trackingService.stopTracking();
+
+          if (mounted) {
+            _disableNightMode();
+            // Pass session data back when popping
+            Navigator.pop(context, session);
+          }
         },
         onContinue: () => Navigator.pop(context),
       ),
@@ -204,8 +249,11 @@ class _SleepTrackingScreenState extends State<SleepTrackingScreen>
 
               const SizedBox(height: 32),
 
-              // ── Sound visualizer ────────────────────────────
-              const SoundVisualizer(),
+              // ── Sound visualizer with live data ─────────────
+              SoundVisualizer(
+                liveRms: _liveRms,
+                classificationLabel: _classificationLabel,
+              ),
 
               const SizedBox(height: 40),
 
