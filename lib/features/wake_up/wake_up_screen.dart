@@ -197,18 +197,18 @@ class _WakeUpScreenState extends State<WakeUpScreen>
                 ),
               ),
 
-              const Spacer(flex: 2),
+              const Spacer(flex: 3),
 
               // ── Stop control ────────────────────────────────
               if (widget.useSwipeToStop)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: SwipeToStop(onStopped: _onStop),
                 )
               else
                 StopAlarmButton(onPressed: _onStop),
 
-              const Spacer(flex: 1),
+              const SizedBox(height: 48),
 
               // ── Snooze ──────────────────────────────────────
               if (_snoozeRemaining > 0)
@@ -246,7 +246,7 @@ class _WakeUpScreenState extends State<WakeUpScreen>
                   ),
                 ),
 
-              const SizedBox(height: 32),
+              const Spacer(flex: 1),
             ],
           ),
         ),

@@ -44,28 +44,49 @@ class _SwipeToStopState extends State<SwipeToStop>
       final progress = (_dragX / _maxDrag).clamp(0.0, 1.0);
 
       return Container(
+        width: trackW,
         height: 68,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(34),
-          color: Colors.white.withValues(alpha: 0.12),
+          color: Colors.black.withValues(alpha: 0.12),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: Colors.white.withValues(alpha: 0.4),
+            width: 1.5,
           ),
         ),
         child: Stack(
           alignment: Alignment.centerLeft,
           children: [
-            // Label — fades out as dragged
-            Center(
-              child: Opacity(
-                opacity: (1 - progress * 2).clamp(0.0, 1.0),
-                child: const Text(
-                  'Сдвиньте, чтобы остановить',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 14,
-                    color: Colors.white54,
-                    letterSpacing: 0.5,
+            // Label — shifted right to avoid thumb, fades out as dragged
+            Positioned.fill(
+              left: thumbSize + 8,
+              right: 16,
+              child: Center(
+                child: Opacity(
+                  opacity: (1 - progress * 2).clamp(0.0, 1.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          'Сдвиньте, чтобы остановить',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            color: Colors.white.withValues(alpha: 0.75),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: Colors.white.withValues(alpha: 0.5),
+                        size: 20,
+                      ),
+                    ],
                   ),
                 ),
               ),
