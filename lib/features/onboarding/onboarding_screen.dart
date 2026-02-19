@@ -4,6 +4,7 @@ import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/sleep_button.dart';
+import 'permissions_screen.dart';
 import 'widgets/chart_illustration.dart';
 import 'widgets/moon_illustration.dart';
 import 'widgets/page_indicator.dart';
@@ -32,7 +33,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_prefKey, true);
     if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/alarm');
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const PermissionsScreen()),
+      );
     }
   }
 

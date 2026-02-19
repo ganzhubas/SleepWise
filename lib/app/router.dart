@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../features/onboarding/onboarding_screen.dart';
+import '../features/onboarding/permissions_screen.dart';
 import '../features/alarm/alarm_screen.dart';
 import '../features/sleep_tracking/sleep_tracking_screen.dart';
 import '../features/wake_up/wake_up_screen.dart';
@@ -11,6 +12,7 @@ import '../features/showcase/widget_showcase_screen.dart';
 class AppRouter {
   static const String showcase = '/showcase';
   static const String onboarding = '/onboarding';
+  static const String permissions = '/permissions';
   static const String alarm = '/alarm';
   static const String sleepTracking = '/sleep-tracking';
   static const String wakeUp = '/wake-up';
@@ -24,6 +26,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const WidgetShowcaseScreen());
       case onboarding:
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
+      case permissions:
+        return MaterialPageRoute(builder: (_) => const PermissionsScreen());
       case alarm:
         return MaterialPageRoute(builder: (_) => const AlarmScreen());
       case sleepTracking:
