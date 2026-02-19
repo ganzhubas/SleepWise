@@ -4,6 +4,10 @@
 <dict>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>SleepWise использует микрофон для анализа звуков во время сна — определения фаз сна, храпа и оптимального момента пробуждения. Аудио не записывается и не сохраняется.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>SleepWise запрашивает доступ к данным о здоровье для чтения пульса (при наличии Apple Watch) и улучшения алгоритма анализа сна.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>SleepWise записывает данные о сне (время засыпания, пробуждения, фазы сна) в Apple Health для синхронизации с другими приложениями здоровья.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

@@ -39,6 +39,9 @@ dependencies:
   wakelock_plus: ^1.2.8
   screen_brightness: ^1.0.1
 
+  # Health platform integration
+  health: ^11.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

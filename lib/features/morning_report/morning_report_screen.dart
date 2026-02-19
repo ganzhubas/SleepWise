@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
+import '../../data/repositories/settings_repository.dart';
 import '../../data/repositories/sleep_repository.dart';
 import '../../models/sleep_phase.dart';
 import '../../models/sleep_session.dart';
+import '../../services/health_service.dart';
 import 'widgets/hypnogram_chart.dart';
 import 'widgets/metric_card.dart';
 import 'widgets/sleep_card.dart';
@@ -27,6 +29,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _staggerController;
   final _sleepRepo = SleepRepository();
+  final _settingsRepo = SettingsRepository();
 
   @override
   void initState() {
@@ -36,9 +39,25 @@ class _MorningReportScreenState extends State<MorningReportScreen>
       duration: const Duration(milliseconds: 2000),
     )..forward();
 
-    // Save session to DB if real data
+    // Save session to DB and sync to health platforms if real data
     if (widget.session != null) {
-      _sleepRepo.saveSleepSession(widget.session!);
+      _saveSession();
+    }
+  }
+
+  Future<void> _saveSession() async {
+    final session = widget.session!;
+    // Save to local DB
+    await _sleepRepo.saveSleepSession(session);
+
+    // Write to Apple Health / Health Connect if enabled
+    try {
+      final settings = await _settingsRepo.getSettings();
+      if (settings.healthConnect || settings.samsungHealth) {
+        await HealthService.instance.writeSleepSession(session);
+      }
+    } catch (_) {
+      // Health sync failure is non-critical
     }
   }
 

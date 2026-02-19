@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
+import '../../data/repositories/settings_repository.dart';
+import '../../services/health_service.dart';
 import '../../widgets/gradient_background.dart';
 import 'widgets/settings_group.dart';
 import 'widgets/settings_tile.dart';
@@ -40,12 +44,221 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final TimeOfDay _reminderTime = const TimeOfDay(hour: 23, minute: 0);
 
   // Integrations
-  bool _healthConnect = false;
+  bool _healthSync = false;
+  String _healthStatus = 'Не подключено';
+  bool _healthLoading = false;
   bool _samsungHealth = false;
+  String _samsungStatus = 'Не подключено';
+  bool _samsungLoading = false;
 
   // Appearance
   String _theme = 'dark';
   String _language = 'ru';
+
+  final _settingsRepo = SettingsRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHealthStatus();
+  }
+
+  Future<void> _loadHealthStatus() async {
+    try {
+      final settings = await _settingsRepo.getSettings();
+      if (!mounted) return;
+      if (settings.healthConnect) {
+        final hasPerms = await HealthService.instance.hasPermissions();
+        if (mounted) {
+          setState(() {
+            _healthSync = hasPerms;
+            _healthStatus = hasPerms ? 'Подключено' : 'Нет разрешений';
+          });
+        }
+      }
+      if (settings.samsungHealth) {
+        setState(() {
+          _samsungHealth = true;
+          _samsungStatus = 'Через Health Connect';
+        });
+      }
+    } catch (_) {
+      // Settings not available yet
+    }
+  }
+
+  Future<void> _toggleHealthSync(bool enable) async {
+    if (enable) {
+      setState(() => _healthLoading = true);
+      final status = await HealthService.instance.requestPermissions();
+      if (!mounted) return;
+
+      switch (status) {
+        case HealthConnectionStatus.connected:
+          setState(() {
+            _healthSync = true;
+            _healthStatus = 'Подключено';
+            _healthLoading = false;
+          });
+          await _settingsRepo.updateSettings(
+            (s) => s.copyWith(healthConnect: true),
+          );
+        case HealthConnectionStatus.denied:
+          setState(() {
+            _healthSync = false;
+            _healthStatus = 'Доступ отклонён';
+            _healthLoading = false;
+          });
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Разрешите доступ к ${HealthService.instance.platformName} в настройках устройства',
+                  style: const TextStyle(fontFamily: 'Inter'),
+                ),
+                backgroundColor: AppColors.darkSurface,
+              ),
+            );
+          }
+        case HealthConnectionStatus.unavailable:
+          setState(() {
+            _healthSync = false;
+            _healthStatus = 'Недоступно';
+            _healthLoading = false;
+          });
+          if (mounted) _showHealthUnavailableDialog();
+      }
+    } else {
+      setState(() {
+        _healthSync = false;
+        _healthStatus = 'Не подключено';
+      });
+      await _settingsRepo.updateSettings(
+        (s) => s.copyWith(healthConnect: false),
+      );
+    }
+  }
+
+  Future<void> _toggleSamsungHealth(bool enable) async {
+    if (enable) {
+      setState(() => _samsungLoading = true);
+
+      // Samsung Health on modern devices routes through Health Connect
+      final available = await HealthService.instance.isHealthConnectAvailable();
+      if (!mounted) return;
+
+      if (available) {
+        final status = await HealthService.instance.requestPermissions();
+        if (!mounted) return;
+        if (status == HealthConnectionStatus.connected) {
+          setState(() {
+            _samsungHealth = true;
+            _samsungStatus = 'Через Health Connect';
+            _samsungLoading = false;
+          });
+          await _settingsRepo.updateSettings(
+            (s) => s.copyWith(samsungHealth: true),
+          );
+        } else {
+          setState(() {
+            _samsungHealth = false;
+            _samsungStatus = 'Не удалось подключить';
+            _samsungLoading = false;
+          });
+        }
+      } else {
+        setState(() {
+          _samsungHealth = false;
+          _samsungStatus = 'Health Connect не найден';
+          _samsungLoading = false;
+        });
+        if (mounted) _showSamsungFallbackDialog();
+      }
+    } else {
+      setState(() {
+        _samsungHealth = false;
+        _samsungStatus = 'Не подключено';
+      });
+      await _settingsRepo.updateSettings(
+        (s) => s.copyWith(samsungHealth: false),
+      );
+    }
+  }
+
+  void _showHealthUnavailableDialog() {
+    final name = Platform.isIOS ? 'Apple Health' : 'Health Connect';
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.darkSurface,
+        title: Text(
+          '$name недоступен',
+          style: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w600,
+            color: AppColors.moonlight,
+          ),
+        ),
+        content: Text(
+          Platform.isAndroid
+              ? 'Установите приложение Health Connect из Google Play для синхронизации данных о сне.'
+              : 'Убедитесь, что приложение «Здоровье» доступно на вашем устройстве.',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            color: AppColors.moonlight.withValues(alpha: 0.7),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Понятно',
+              style: TextStyle(color: AppColors.calmBlue),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSamsungFallbackDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.darkSurface,
+        title: Text(
+          'Samsung Health',
+          style: TextStyle(
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.w600,
+            color: AppColors.moonlight,
+          ),
+        ),
+        content: Text(
+          'На новых устройствах Samsung Health синхронизируется '
+          'через Google Health Connect.\n\n'
+          '1. Установите Health Connect из Google Play\n'
+          '2. Откройте Samsung Health → Настройки → Health Connect\n'
+          '3. Разрешите синхронизацию данных\n'
+          '4. Вернитесь сюда и включите переключатель',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            height: 1.5,
+            color: AppColors.moonlight.withValues(alpha: 0.7),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Понятно',
+              style: TextStyle(color: AppColors.calmBlue),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -197,27 +410,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildIntegrationsGroup() {
+    // Platform-adaptive: show Apple Health on iOS, Health Connect on Android
+    final isIOS = Platform.isIOS;
+    final healthTitle = isIOS ? 'Apple Health' : 'Health Connect';
+    final healthIcon = isIOS ? Icons.favorite_rounded : Icons.favorite_rounded;
+    final healthColor = isIOS
+        ? const Color(0xFFFF2D55)
+        : const Color(0xFF4285F4);
+
     return SettingsGroup(
       label: 'Интеграции',
       children: [
         SettingsTile.toggle(
-          icon: Icons.favorite_rounded,
-          iconBgColor: const Color(0xFFFF2D55),
-          title: 'Health Connect',
-          subtitle: _healthConnect ? 'Подключено' : 'Не подключено',
-          value: _healthConnect,
-          onChanged: (v) => setState(() => _healthConnect = v),
+          icon: healthIcon,
+          iconBgColor: healthColor,
+          title: healthTitle,
+          subtitle: _healthLoading ? 'Подключение...' : _healthStatus,
+          value: _healthSync,
+          onChanged: _healthLoading ? null : _toggleHealthSync,
           isFirst: true,
         ),
-        SettingsTile.toggle(
-          icon: Icons.watch_rounded,
-          iconBgColor: const Color(0xFF1428A0),
-          title: 'Samsung Health',
-          subtitle: _samsungHealth ? 'Подключено' : 'Не подключено',
-          value: _samsungHealth,
-          onChanged: (v) => setState(() => _samsungHealth = v),
-          isLast: true,
-        ),
+        if (!isIOS)
+          SettingsTile.toggle(
+            icon: Icons.watch_rounded,
+            iconBgColor: const Color(0xFF1428A0),
+            title: 'Samsung Health',
+            subtitle: _samsungLoading ? 'Подключение...' : _samsungStatus,
+            value: _samsungHealth,
+            onChanged: _samsungLoading ? null : _toggleSamsungHealth,
+            isLast: true,
+          ),
+        if (isIOS)
+          SettingsTile(
+            icon: Icons.info_outline_rounded,
+            iconBgColor: AppColors.moonlight.withValues(alpha: 0.15),
+            title: 'Данные сна',
+            isLast: true,
+            trailing: Text(
+              _healthSync ? 'Автозапись' : 'Выкл',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 13,
+                color: _healthSync
+                    ? AppColors.success.withValues(alpha: 0.8)
+                    : AppColors.moonlight.withValues(alpha: 0.35),
+              ),
+            ),
+          ),
       ],
     );
   }

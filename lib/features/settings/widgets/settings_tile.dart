@@ -69,7 +69,7 @@ class SettingsTile extends StatelessWidget {
     );
   }
 
-  /// Toggle tile with switch.
+  /// Toggle tile with switch. Pass null [onChanged] to disable.
   factory SettingsTile.toggle({
     Key? key,
     required IconData icon,
@@ -77,7 +77,7 @@ class SettingsTile extends StatelessWidget {
     required String title,
     String? subtitle,
     required bool value,
-    required ValueChanged<bool> onChanged,
+    ValueChanged<bool>? onChanged,
     bool isFirst = false,
     bool isLast = false,
   }) {
