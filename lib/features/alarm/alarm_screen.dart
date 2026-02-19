@@ -5,6 +5,7 @@ import '../../core/constants/app_durations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../widgets/gradient_background.dart';
+import '../sleep_tracking/sleep_tracking_screen.dart';
 import 'widgets/start_button.dart';
 import 'widgets/time_picker_sheet.dart';
 import 'widgets/wake_window_selector.dart';
@@ -88,7 +89,14 @@ class _AlarmScreenState extends State<AlarmScreen> {
   }
 
   void _onStart() {
-    // TODO: transition to sleep tracking / night mode
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SleepTrackingScreen(
+          alarmTime: _alarmTime,
+          wakeWindow: _wakeWindow,
+        ),
+      ),
+    );
   }
 
   @override
