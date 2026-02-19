@@ -1,28 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sleepwise/core/theme/app_colors.dart';
+import 'package:sleepwise/core/theme/app_theme.dart';
 import 'package:sleepwise/features/onboarding/onboarding_screen.dart';
 
 void main() {
-  final darkTheme = ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.dark,
-    colorScheme: const ColorScheme.dark(
-      primary: AppColors.calmBlue,
-      secondary: AppColors.dreamPurple,
-      surface: AppColors.darkSurface,
-      error: AppColors.error,
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
-      onSurface: AppColors.darkOnBackground,
-    ),
-    scaffoldBackgroundColor: AppColors.darkBackground,
-  );
-
   Widget buildApp() {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: darkTheme,
+      theme: AppTheme.dark,
       routes: {
         '/alarm': (_) => const Scaffold(body: Center(child: Text('Alarm'))),
       },

@@ -1,31 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sleepwise/core/theme/app_colors.dart';
+import 'package:sleepwise/core/theme/app_theme.dart';
 import 'package:sleepwise/features/onboarding/permissions_screen.dart';
 import 'package:sleepwise/widgets/gradient_background.dart';
 
 void main() {
-  final darkTheme = ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.dark,
-    colorScheme: const ColorScheme.dark(
-      primary: AppColors.calmBlue,
-      secondary: AppColors.dreamPurple,
-      surface: AppColors.darkSurface,
-      error: AppColors.error,
-      onPrimary: Colors.white,
-      onSecondary: Colors.white,
-      onSurface: AppColors.darkOnBackground,
-    ),
-    scaffoldBackgroundColor: AppColors.darkBackground,
-  );
-
   /// Wraps a page body in Scaffold + GradientBackground + SafeArea,
   /// matching the real PermissionsScreen chrome.
   Widget wrapPage(Widget page) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: darkTheme,
+      theme: AppTheme.dark,
       home: Scaffold(
         body: GradientBackground(
           child: SafeArea(child: page),

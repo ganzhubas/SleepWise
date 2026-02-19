@@ -3,39 +3,39 @@ import 'package:flutter/material.dart';
 class AppTypography {
   AppTypography._();
 
-  static const String _poppins = 'Poppins';
+  static const String _montserrat = 'Montserrat';
   static const String _inter = 'Inter';
   static const String mono = 'JetBrainsMono';
 
   static TextTheme get textTheme {
     return const TextTheme(
       displayLarge: TextStyle(
-        fontFamily: _poppins,
+        fontFamily: _montserrat,
         fontSize: 32,
         fontWeight: FontWeight.w700,
       ),
       displayMedium: TextStyle(
-        fontFamily: _poppins,
+        fontFamily: _montserrat,
         fontSize: 28,
         fontWeight: FontWeight.w600,
       ),
       displaySmall: TextStyle(
-        fontFamily: _poppins,
+        fontFamily: _montserrat,
         fontSize: 24,
         fontWeight: FontWeight.w600,
       ),
       headlineMedium: TextStyle(
-        fontFamily: _poppins,
+        fontFamily: _montserrat,
         fontSize: 20,
         fontWeight: FontWeight.w500,
       ),
       titleLarge: TextStyle(
-        fontFamily: _poppins,
+        fontFamily: _montserrat,
         fontSize: 18,
         fontWeight: FontWeight.w500,
       ),
       titleMedium: TextStyle(
-        fontFamily: _poppins,
+        fontFamily: _montserrat,
         fontSize: 16,
         fontWeight: FontWeight.w500,
       ),
