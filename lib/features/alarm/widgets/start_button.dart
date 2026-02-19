@@ -59,7 +59,10 @@ class _StartButtonState extends State<StartButton>
       animation: Listenable.merge([_pulseAnimation, _scaleAnimation]),
       builder: (context, _) {
         final pulse = _pulseAnimation.value;
-        final scale = _scaleAnimation.value;
+        final tapScale = _scaleAnimation.value;
+        // Breathe: 1.0 → 1.03 → 1.0 synced with glow pulse
+        final breatheScale = 1.0 + pulse * 0.03;
+        final scale = tapScale * breatheScale;
 
         return Transform.scale(
           scale: scale,

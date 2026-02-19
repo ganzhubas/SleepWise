@@ -1,11 +1,12 @@
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_dimensions.dart';
+import '../../core/constants/app_durations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../widgets/gradient_background.dart';
 import 'widgets/start_button.dart';
+import 'widgets/time_picker_sheet.dart';
 import 'widgets/wake_window_selector.dart';
 
 class AlarmScreen extends StatefulWidget {
@@ -76,7 +77,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => _TimePickerSheet(
+      builder: (ctx) => TimePickerSheet(
         initial: _alarmTime,
         onConfirm: (t) {
           setState(() => _alarmTime = t);
@@ -117,27 +118,21 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
             const Spacer(flex: 2),
 
-            // Alarm time — tappable
+            // Alarm time — tappable, with animated digit transition
             GestureDetector(
               onTap: _openTimePicker,
               child: Column(
                 children: [
-                  Text(
-                    '${_alarmTime.hour.toString().padLeft(2, '0')}:${_alarmTime.minute.toString().padLeft(2, '0')}',
-                    style: TextStyle(
-                      fontFamily: AppTypography.mono,
-                      fontSize: 84,
-                      fontWeight: FontWeight.w300,
-                      color: AppColors.moonlight,
-                      letterSpacing: 4,
-                      height: 1,
-                    ),
-                  ),
+                  _AnimatedTimeDisplay(time: _alarmTime),
                   const SizedBox(height: AppDimensions.paddingS),
-                  Text(
-                    _timeUntilAlarm,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: AppColors.calmBlue.withValues(alpha: 0.7),
+                  AnimatedSwitcher(
+                    duration: AppDurations.normal,
+                    child: Text(
+                      _timeUntilAlarm,
+                      key: ValueKey(_timeUntilAlarm),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.calmBlue.withValues(alpha: 0.7),
+                      ),
                     ),
                   ),
                 ],
@@ -180,123 +175,45 @@ class _AlarmScreenState extends State<AlarmScreen> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Cupertino-style time picker bottom sheet
+// Animated time display — slides digits up/down on change
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _TimePickerSheet extends StatefulWidget {
-  final TimeOfDay initial;
-  final ValueChanged<TimeOfDay> onConfirm;
+class _AnimatedTimeDisplay extends StatelessWidget {
+  final TimeOfDay time;
 
-  const _TimePickerSheet({required this.initial, required this.onConfirm});
-
-  @override
-  State<_TimePickerSheet> createState() => _TimePickerSheetState();
-}
-
-class _TimePickerSheetState extends State<_TimePickerSheet> {
-  late Duration _selected;
-
-  @override
-  void initState() {
-    super.initState();
-    _selected = Duration(
-      hours: widget.initial.hour,
-      minutes: widget.initial.minute,
-    );
-  }
+  const _AnimatedTimeDisplay({required this.time});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle
-            const SizedBox(height: 12),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.moonlight.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 8),
+    final timeStr =
+        '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimensions.paddingL,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Text(
-                      'Отмена',
-                      style: TextStyle(
-                        color: AppColors.moonlight.withValues(alpha: 0.5),
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    'Время будильника',
-                    style: TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.moonlight,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      final h = _selected.inHours % 24;
-                      final m = _selected.inMinutes % 60;
-                      widget.onConfirm(TimeOfDay(hour: h, minute: m));
-                    },
-                    child: const Text(
-                      'Готово',
-                      style: TextStyle(
-                        color: AppColors.calmBlue,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Picker
-            SizedBox(
-              height: 216,
-              child: CupertinoTheme(
-                data: const CupertinoThemeData(
-                  brightness: Brightness.dark,
-                  textTheme: CupertinoTextThemeData(
-                    dateTimePickerTextStyle: TextStyle(
-                      color: AppColors.moonlight,
-                      fontSize: 22,
-                    ),
-                  ),
-                ),
-                child: CupertinoTimerPicker(
-                  mode: CupertinoTimerPickerMode.hm,
-                  initialTimerDuration: _selected,
-                  onTimerDurationChanged: (d) => _selected = d,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
+    return AnimatedSwitcher(
+      duration: AppDurations.slow,
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      transitionBuilder: (child, animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.15),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
+        );
+      },
+      child: Text(
+        timeStr,
+        key: ValueKey(timeStr),
+        style: TextStyle(
+          fontFamily: AppTypography.mono,
+          fontSize: 84,
+          fontWeight: FontWeight.w300,
+          color: AppColors.moonlight,
+          letterSpacing: 4,
+          height: 1,
         ),
       ),
     );

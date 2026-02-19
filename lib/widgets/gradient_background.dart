@@ -55,11 +55,12 @@ class _AnimatedStarsState extends State<_AnimatedStars>
   void initState() {
     super.initState();
     final rng = math.Random(42);
-    _stars = List.generate(50, (_) => _Star.random(rng));
+    _stars = List.generate(35, (_) => _Star.random(rng));
+    // Long-running linear controller — elapsed time drives individual periods
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat(reverse: true);
+      duration: const Duration(seconds: 240),
+    )..repeat();
   }
 
   @override
@@ -76,7 +77,7 @@ class _AnimatedStarsState extends State<_AnimatedStars>
         return CustomPaint(
           painter: _StarsPainter(
             stars: _stars,
-            twinkle: _controller.value,
+            elapsed: _controller.value * 240, // seconds
           ),
           size: Size.infinite,
         );
@@ -90,12 +91,14 @@ class _Star {
   final double y;
   final double radius;
   final double phase; // 0..1 offset for twinkle
+  final double period; // individual twinkle period in seconds (3-8)
 
   _Star({
     required this.x,
     required this.y,
     required this.radius,
     required this.phase,
+    required this.period,
   });
 
   factory _Star.random(math.Random rng) => _Star(
@@ -103,23 +106,26 @@ class _Star {
         y: rng.nextDouble() * 0.7, // mostly in top 70%
         radius: 0.5 + rng.nextDouble() * 1.5,
         phase: rng.nextDouble(),
+        period: 3.0 + rng.nextDouble() * 5.0, // 3-8 seconds
       );
 }
 
 class _StarsPainter extends CustomPainter {
   final List<_Star> stars;
-  final double twinkle;
+  final double elapsed;
 
-  _StarsPainter({required this.stars, required this.twinkle});
+  _StarsPainter({required this.stars, required this.elapsed});
 
   @override
   void paint(Canvas canvas, Size size) {
     for (final star in stars) {
-      final offset = (twinkle + star.phase) % 1.0;
-      final opacity = 0.3 + 0.7 * ((math.sin(offset * math.pi * 2) + 1) / 2);
+      // Each star twinkles at its own period
+      final t = elapsed / star.period + star.phase;
+      final opacity =
+          0.15 + 0.55 * ((math.sin(t * math.pi * 2) + 1) / 2);
       final paint = Paint()
         ..color = AppColors.moonlight.withValues(alpha: opacity)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 0.5);
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 0.8);
       canvas.drawCircle(
         Offset(star.x * size.width, star.y * size.height),
         star.radius,
@@ -130,5 +136,5 @@ class _StarsPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_StarsPainter oldDelegate) =>
-      twinkle != oldDelegate.twinkle;
+      elapsed != oldDelegate.elapsed;
 }
