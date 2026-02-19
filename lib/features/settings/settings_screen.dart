@@ -7,6 +7,7 @@ import 'widgets/settings_tile.dart';
 import 'widgets/pro_banner.dart';
 import 'widgets/segment_option.dart';
 import 'melody_picker_screen.dart';
+import '../paywall/paywall_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -264,7 +265,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.all(12),
-          child: ProBanner(onTap: () {}),
+          child: ProBanner(onTap: () => _openPaywall()),
         ),
         SettingsTile.navigation(
           icon: Icons.restore_rounded,
@@ -321,6 +322,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // ═══════════════════════════════════════════════════════════════════════════
   // Pickers
   // ═══════════════════════════════════════════════════════════════════════════
+
+  void _openPaywall() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const PaywallScreen(),
+      ),
+    );
+  }
 
   void _openMelodyPicker() {
     Navigator.of(context).push(

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../widgets/gradient_background.dart';
+import '../paywall/paywall_screen.dart';
 import 'widgets/mini_equalizer.dart';
 
 /// Data for a single alarm melody option.
@@ -362,13 +363,18 @@ class _MelodyPickerScreenState extends State<MelodyPickerScreen>
             offset: Offset(0, 20 * (1 - anim.value)),
             child: Padding(
               padding: const EdgeInsets.only(top: 12),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 14,
+              child: GestureDetector(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (_) => const PaywallScreen()),
                 ),
-                decoration: BoxDecoration(
-                  color: AppColors.darkSurface.withValues(alpha: 0.5),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkSurface.withValues(alpha: 0.5),
                   borderRadius:
                       BorderRadius.circular(AppDimensions.radiusM),
                 ),
@@ -454,6 +460,7 @@ class _MelodyPickerScreenState extends State<MelodyPickerScreen>
                     ),
                   ],
                 ),
+              ),
               ),
             ),
           ),
