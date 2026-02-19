@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../core/theme/app_typography.dart';
+import '../morning_report/morning_report_screen.dart';
 import 'widgets/sunrise_background.dart';
 import 'widgets/stop_alarm_button.dart';
 import 'widgets/swipe_to_stop.dart';
@@ -124,9 +125,12 @@ class _WakeUpScreenState extends State<WakeUpScreen>
 
   void _onStop() {
     _stopAlarm();
-    // Navigate to morning report (or back to home)
+    // Navigate to morning report, replacing the entire wake-up stack
     if (mounted) {
-      Navigator.of(context).popUntil((route) => route.isFirst);
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MorningReportScreen()),
+        (route) => route.isFirst,
+      );
     }
   }
 
