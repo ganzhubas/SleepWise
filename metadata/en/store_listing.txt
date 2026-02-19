@@ -1,0 +1,80 @@
+# SleepWise — App Store / Google Play
+# Language: English
+
+## App Name
+SleepWise — Smart Alarm Clock
+
+## Subtitle (30 characters)
+Wake up in your lightest sleep
+
+## Promotional Text (170 characters)
+Smart alarm that analyzes sleep phases using sound and wakes you at the optimal moment. Wake up refreshed every morning — no wearables needed.
+
+## Description (App Store / Google Play)
+
+Wake up naturally and effortlessly with SleepWise — a smart alarm clock that analyzes your sleep and wakes you at the perfect moment.
+
+━━━ HOW IT WORKS ━━━
+
+SleepWise uses your smartphone's microphone to analyze sounds during sleep. The app identifies sleep phases — light sleep, deep sleep, and REM (Rapid Eye Movement) — by detecting characteristic patterns of breathing, movement, and ambient sounds.
+
+You set a wake-up time and a window of 10–30 minutes. The alarm triggers during a light sleep phase within that window, when your body is most ready to wake up. The result — you rise feeling alert and rested, without that groggy feeling.
+
+━━━ KEY FEATURES ━━━
+
+◆ SMART ALARM
+Wakes you during the optimal sleep phase within your chosen wake-up window. Gradual volume increase provides a gentle, natural awakening.
+
+◆ NIGHT MODE
+An elegant dark clock display during tracking. Minimal brightness won't disturb your sleep, yet keeps the time visible.
+
+◆ SLEEP ANALYSIS
+A detailed hypnogram shows all your sleep phases: falling asleep, light sleep, deep sleep, and REM. See exactly how much time you spend in each phase.
+
+◆ MORNING REPORT
+Every morning — a personalized sleep quality score (0–100) with detailed metrics: total duration, time to fall asleep, number of awakenings, deep sleep percentage.
+
+◆ SNORE DETECTION
+The app captures snoring episodes, their duration, and intensity. Track trends and take steps to improve your sleep quality.
+
+◆ STATISTICS & TRENDS
+Charts for week, month, and year: sleep quality dynamics, average bedtime and wake time, sleep duration. Track progress and discover patterns.
+
+◆ HEALTH INTEGRATION
+Sync data with Apple Health and Google Fit. All sleep metrics accessible within your unified health ecosystem.
+
+◆ SOUND LIBRARY
+Choose from a collection of pleasant alarm sounds: from soft melodies to nature sounds. Customize volume and fade-in duration.
+
+━━━ PRIVACY & SECURITY ━━━
+
+Your privacy is our top priority:
+
+• Audio is NEVER recorded or stored. Analysis happens in real time on-device — sound is processed and immediately discarded.
+• Sleep data is stored only on your device.
+• No data is sent to any servers. All processing is local.
+• The app requires no registration and collects no personal information.
+• Microphone access is used exclusively for sleep phase analysis.
+
+━━━ SLEEPWISE PRO ━━━
+
+Unlock advanced features with a Pro subscription:
+• Detailed hypnogram with phase breakdown
+• Extended statistics and data export
+• Unlimited sleep history
+• Snore detection and analysis
+• Apple Health / Google Fit integration
+• Priority support
+
+━━━
+
+Quality sleep is the foundation of health, productivity, and well-being. SleepWise helps you sleep better and wake easier. Start tonight!
+
+## Keywords
+alarm, sleep, sleep phases, sleep tracker, sleep analysis, smart alarm, sleep quality, hypnogram, snoring, healthy sleep, wake up, sleep cycle
+
+## Category
+Health & Fitness
+
+## Age Rating
+4+ (App Store) / Everyone (Google Play)

@@ -1,0 +1,14 @@
+# What's New — v1.0.0
+
+First release of SleepWise!
+
+• Smart alarm — wake up in your lightest sleep phase
+• Sound-based sleep phase analysis (no wearables needed)
+• Night mode with minimal brightness
+• Morning report with sleep quality score
+• Hypnogram — sleep phase visualization
+• Snore detection
+• Statistics for week, month, and year
+• Apple Health and Google Fit integration
+• Alarm sound library
+• Russian and English language support

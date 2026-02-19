@@ -20,21 +20,56 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.sleepwise.sleepwise"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 26
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            // Configure via environment variables or local key.properties:
+            //   storeFile = file(System.getenv("KEYSTORE_PATH") ?: "../keystore/sleepwise-release.jks")
+            //   storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
+            //   keyAlias = System.getenv("KEY_ALIAS") ?: "sleepwise"
+            //   keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+            //
+            // To generate a keystore:
+            //   keytool -genkey -v -keystore sleepwise-release.jks \
+            //     -keyalg RSA -keysize 2048 -validity 10000 \
+            //     -alias sleepwise -storepass <password>
+            //
+            // For CI/CD, set environment variables or use key.properties file.
+            // Falling back to debug signing until release keystore is configured.
+            storeFile = signingConfigs.getByName("debug").storeFile
+            storePassword = signingConfigs.getByName("debug").storePassword
+            keyAlias = signingConfigs.getByName("debug").keyAlias
+            keyPassword = signingConfigs.getByName("debug").keyPassword
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = true
+        }
+        density {
+            enableSplit = true
+        }
+        abi {
+            enableSplit = true
         }
     }
 }
