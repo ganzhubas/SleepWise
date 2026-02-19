@@ -6,6 +6,7 @@ import 'widgets/settings_group.dart';
 import 'widgets/settings_tile.dart';
 import 'widgets/pro_banner.dart';
 import 'widgets/segment_option.dart';
+import 'melody_picker_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,7 +17,18 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   // Alarm
-  String _melody = 'Восход';
+  String _melodyId = 'sunrise_glow';
+  static const _melodyNames = {
+    'sunrise_glow': 'Sunrise Glow',
+    'forest_morning': 'Forest Morning',
+    'ocean_breeze': 'Ocean Breeze',
+    'gentle_piano': 'Gentle Piano',
+    'digital_soft': 'Digital Soft',
+    'classic_bell': 'Classic Bell',
+    'rain_to_sun': 'Rain to Sun',
+    'zen_garden': 'Zen Garden',
+    'vibration_only': 'Вибрация',
+  };
   double _alarmVolume = 0.7;
   int _wakeWindow = 30;
   bool _snoozeEnabled = true;
@@ -103,8 +115,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           icon: Icons.music_note_rounded,
           iconBgColor: AppColors.error,
           title: 'Мелодия будильника',
-          value: _melody,
-          onTap: () => _showMelodyPicker(),
+          value: _melodyNames[_melodyId] ?? _melodyId,
+          onTap: () => _openMelodyPicker(),
           isFirst: true,
         ),
         SettingsTile(
@@ -310,53 +322,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // Pickers
   // ═══════════════════════════════════════════════════════════════════════════
 
-  void _showMelodyPicker() {
-    const melodies = ['Восход', 'Океан', 'Лес', 'Пианино', 'Колокольчики'];
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.darkSurface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.moonlight.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 16),
-            ...melodies.map((m) => ListTile(
-                  leading: Icon(
-                    _melody == m
-                        ? Icons.radio_button_checked
-                        : Icons.radio_button_unchecked,
-                    color: _melody == m
-                        ? AppColors.calmBlue
-                        : AppColors.moonlight.withValues(alpha: 0.3),
-                    size: 22,
-                  ),
-                  title: Text(
-                    m,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 15,
-                      color: AppColors.moonlight.withValues(alpha: 0.8),
-                    ),
-                  ),
-                  onTap: () {
-                    setState(() => _melody = m);
-                    Navigator.pop(ctx);
-                  },
-                )),
-            const SizedBox(height: 8),
-          ],
+  void _openMelodyPicker() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MelodyPickerScreen(
+          selectedId: _melodyId,
+          onSelected: (id) => setState(() => _melodyId = id),
         ),
       ),
     );
