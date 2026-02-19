@@ -1,48 +1,61 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTypography {
   AppTypography._();
 
+  static const String _poppins = 'Poppins';
+  static const String _inter = 'Inter';
+  static const String mono = 'JetBrainsMono';
+
   static TextTheme get textTheme {
-    return TextTheme(
-      displayLarge: GoogleFonts.poppins(
+    return const TextTheme(
+      displayLarge: TextStyle(
+        fontFamily: _poppins,
         fontSize: 32,
         fontWeight: FontWeight.w700,
       ),
-      displayMedium: GoogleFonts.poppins(
+      displayMedium: TextStyle(
+        fontFamily: _poppins,
         fontSize: 28,
         fontWeight: FontWeight.w600,
       ),
-      displaySmall: GoogleFonts.poppins(
+      displaySmall: TextStyle(
+        fontFamily: _poppins,
         fontSize: 24,
         fontWeight: FontWeight.w600,
       ),
-      headlineMedium: GoogleFonts.poppins(
+      headlineMedium: TextStyle(
+        fontFamily: _poppins,
         fontSize: 20,
         fontWeight: FontWeight.w500,
       ),
-      titleLarge: GoogleFonts.poppins(
+      titleLarge: TextStyle(
+        fontFamily: _poppins,
         fontSize: 18,
         fontWeight: FontWeight.w500,
       ),
-      titleMedium: GoogleFonts.poppins(
+      titleMedium: TextStyle(
+        fontFamily: _poppins,
         fontSize: 16,
         fontWeight: FontWeight.w500,
       ),
-      bodyLarge: GoogleFonts.inter(
+      bodyLarge: TextStyle(
+        fontFamily: _inter,
         fontSize: 16,
         fontWeight: FontWeight.w400,
       ),
-      bodyMedium: GoogleFonts.inter(
+      bodyMedium: TextStyle(
+        fontFamily: _inter,
         fontSize: 14,
         fontWeight: FontWeight.w400,
       ),
-      bodySmall: GoogleFonts.inter(
+      bodySmall: TextStyle(
+        fontFamily: _inter,
         fontSize: 12,
         fontWeight: FontWeight.w400,
       ),
-      labelLarge: GoogleFonts.inter(
+      labelLarge: TextStyle(
+        fontFamily: _inter,
         fontSize: 14,
         fontWeight: FontWeight.w500,
       ),

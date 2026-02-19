@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sleepwise/core/theme/app_typography.dart';
 
 class TimeDisplay extends StatelessWidget {
   final int hours;
@@ -33,7 +34,7 @@ class TimeDisplay extends StatelessWidget {
         Text(
           '${displayHour.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}',
           style: TextStyle(
-            fontFamily: 'monospace',
+            fontFamily: AppTypography.mono,
             fontSize: fontSize,
             fontWeight: FontWeight.w300,
             color: textColor,
