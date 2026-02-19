@@ -1,3 +1,5 @@
+import '../../../data/models/sleep_session_model.dart';
+
 /// Single day of sleep statistics.
 class DayStat {
   final DateTime date;
@@ -90,5 +92,17 @@ class SleepStatsData {
   static String weekdayFullRu(int weekday) {
     const names = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
     return names[(weekday - 1) % 7];
+  }
+
+  /// Convert stored DB sessions to DayStat list.
+  static List<DayStat> fromModels(List<SleepSessionModel> models) {
+    return models.map((m) => DayStat(
+      date: m.date,
+      score: m.score,
+      hoursSlept: m.hoursSlept,
+      bedtimeHour: m.bedtimeHour,
+      snorePercent: m.snorePercent,
+      awakenings: m.awakenings,
+    )).toList();
   }
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
+import '../../data/repositories/sleep_repository.dart';
+import '../../models/sleep_phase.dart';
+import '../../models/sleep_session.dart';
 import 'widgets/hypnogram_chart.dart';
 import 'widgets/metric_card.dart';
 import 'widgets/sleep_card.dart';
@@ -8,9 +11,13 @@ import 'widgets/sleep_score_circle.dart';
 import 'widgets/snore_card.dart';
 
 /// Morning report screen shown after stopping the alarm.
-/// Scrollable list of cards with staggered slide-up + fade-in animations.
+///
+/// When [session] is provided, displays real data and saves to database.
+/// Otherwise, falls back to hardcoded test data.
 class MorningReportScreen extends StatefulWidget {
-  const MorningReportScreen({super.key});
+  final SleepSession? session;
+
+  const MorningReportScreen({super.key, this.session});
 
   @override
   State<MorningReportScreen> createState() => _MorningReportScreenState();
@@ -19,6 +26,7 @@ class MorningReportScreen extends StatefulWidget {
 class _MorningReportScreenState extends State<MorningReportScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _staggerController;
+  final _sleepRepo = SleepRepository();
 
   @override
   void initState() {
@@ -27,12 +35,86 @@ class _MorningReportScreenState extends State<MorningReportScreen>
       vsync: this,
       duration: const Duration(milliseconds: 2000),
     )..forward();
+
+    // Save session to DB if real data
+    if (widget.session != null) {
+      _sleepRepo.saveSleepSession(widget.session!);
+    }
   }
 
   @override
   void dispose() {
     _staggerController.dispose();
     super.dispose();
+  }
+
+  // ── Data accessors (real or test fallback) ─────────────────────────────
+
+  int get _score => widget.session?.score ?? 82;
+
+  String get _sleepDuration {
+    if (widget.session == null) return '7ч 24мин';
+    final dur = widget.session!.duration;
+    final h = dur.inHours;
+    final m = dur.inMinutes % 60;
+    return '$hч $mмин';
+  }
+
+  String get _bedtimeStr {
+    if (widget.session == null) return '23:14';
+    final t = widget.session!.bedtime;
+    return '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+  }
+
+  String get _wakeTimeStr {
+    if (widget.session == null) return '06:52';
+    final t = widget.session!.wakeTime;
+    return '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+  }
+
+  String get _inBedDuration {
+    if (widget.session == null) return '7ч 38мин';
+    final dur = widget.session!.duration;
+    final h = dur.inHours;
+    final m = dur.inMinutes % 60;
+    return '$hч $mмин';
+  }
+
+  String get _awakenings {
+    if (widget.session == null) return '2';
+    var count = 0;
+    final phases = widget.session!.phases;
+    for (var i = 1; i < phases.length; i++) {
+      if (phases[i].type == SleepPhaseType.awake &&
+          phases[i - 1].type != SleepPhaseType.awake) {
+        count++;
+      }
+    }
+    return count.toString();
+  }
+
+  int? get _snorePercent => widget.session?.snorePercentage;
+
+  List<SleepPhase>? get _phases =>
+      widget.session?.phases.isNotEmpty == true ? widget.session!.phases : null;
+
+  DateTime? get _bedtime => widget.session?.bedtime;
+
+  String get _recommendation {
+    final score = _score;
+    if (score >= 80) {
+      return 'Отличная ночь! Вы заснули быстро и спали стабильно. '
+          'Попробуйте ложиться в это же время каждый день '
+          'для стабильного режима.';
+    }
+    if (score >= 60) {
+      return 'Неплохой сон, но есть куда расти. '
+          'Попробуйте ложиться на 30 минут раньше '
+          'и уменьшить экранное время перед сном.';
+    }
+    return 'Этой ночью сон мог быть лучше. '
+        'Обратите внимание на режим дня, '
+        'избегайте кофеина после 16:00 и создайте комфортные условия.';
   }
 
   /// Build a staggered animation for item at [index] out of [total].
@@ -76,9 +158,12 @@ class _MorningReportScreenState extends State<MorningReportScreen>
                     // ── Hypnogram ──────────────────────────────────
                     _StaggeredItem(
                       animation: _staggerAnimation(1, totalItems),
-                      child: const SleepCard(
+                      child: SleepCard(
                         title: 'Гипнограмма',
-                        child: HypnogramChart(),
+                        child: HypnogramChart(
+                          phases: _phases,
+                          bedtime: _bedtime,
+                        ),
                       ),
                     ),
 
@@ -95,7 +180,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
                     // ── Snore card ─────────────────────────────────
                     _StaggeredItem(
                       animation: _staggerAnimation(3, totalItems),
-                      child: const SnoreCard(),
+                      child: SnoreCard(snorePercent: _snorePercent),
                     ),
 
                     const SizedBox(height: AppDimensions.paddingM),
@@ -171,10 +256,10 @@ class _MorningReportScreenState extends State<MorningReportScreen>
       ),
       child: Column(
         children: [
-          const SleepScoreCircle(score: 82),
+          SleepScoreCircle(score: _score),
           const SizedBox(height: 20),
           Text(
-            '7ч 24мин',
+            _sleepDuration,
             style: TextStyle(
               fontFamily: 'Montserrat',
               fontSize: 28,
@@ -205,7 +290,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
               child: MetricCard(
                 icon: Icons.nightlight_round,
                 label: 'Заснул',
-                value: '23:14',
+                value: _bedtimeStr,
                 iconColor: AppColors.dreamPurple.withValues(alpha: 0.7),
               ),
             ),
@@ -214,7 +299,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
               child: MetricCard(
                 icon: Icons.wb_sunny_rounded,
                 label: 'Проснулся',
-                value: '06:52',
+                value: _wakeTimeStr,
                 iconColor: AppColors.starYellow.withValues(alpha: 0.8),
               ),
             ),
@@ -227,7 +312,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
               child: MetricCard(
                 icon: Icons.bed_rounded,
                 label: 'В кровати',
-                value: '7ч 38мин',
+                value: _inBedDuration,
               ),
             ),
             const SizedBox(width: AppDimensions.paddingM),
@@ -235,7 +320,7 @@ class _MorningReportScreenState extends State<MorningReportScreen>
               child: MetricCard(
                 icon: Icons.visibility_outlined,
                 label: 'Пробуждений',
-                value: '2',
+                value: _awakenings,
                 iconColor: AppColors.warning.withValues(alpha: 0.7),
               ),
             ),
@@ -246,22 +331,27 @@ class _MorningReportScreenState extends State<MorningReportScreen>
   }
 
   Widget _buildRecommendation() {
+    final score = _score;
+    final color = score >= 80
+        ? AppColors.success
+        : score >= 60
+            ? AppColors.warning
+            : AppColors.error;
+
     return SleepCard(
-      leftBorderColor: AppColors.success,
+      leftBorderColor: color,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
             Icons.lightbulb_outline_rounded,
             size: 22,
-            color: AppColors.success.withValues(alpha: 0.8),
+            color: color.withValues(alpha: 0.8),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Отличная ночь! Вы заснули быстро и спали стабильно. '
-              'Попробуйте ложиться в это же время каждый день '
-              'для стабильного режима.',
+              _recommendation,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 14,

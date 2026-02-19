@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
+import '../../data/repositories/sleep_repository.dart';
 import '../../widgets/gradient_background.dart';
 import 'models/sleep_stats_data.dart';
 import 'widgets/period_selector.dart';
@@ -21,6 +22,8 @@ class _StatisticsScreenState extends State<StatisticsScreen>
     with SingleTickerProviderStateMixin {
   StatsPeriod _period = StatsPeriod.week;
   late final AnimationController _animController;
+  final _sleepRepo = SleepRepository();
+  List<DayStat>? _dbData;
 
   @override
   void initState() {
@@ -29,6 +32,20 @@ class _StatisticsScreenState extends State<StatisticsScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1800),
     )..forward();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final sessions = await _sleepRepo.getLastSessions(90);
+      if (mounted && sessions.isNotEmpty) {
+        setState(() {
+          _dbData = SleepStatsData.fromModels(sessions);
+        });
+      }
+    } catch (_) {
+      // DB unavailable — keep using test data
+    }
   }
 
   @override
@@ -50,10 +67,18 @@ class _StatisticsScreenState extends State<StatisticsScreen>
       case StatsPeriod.week:
         return 7;
       case StatsPeriod.month:
-        return 14; // we only have 14 days of test data
+        return 30;
       case StatsPeriod.threeMonths:
-        return 14;
+        return 90;
     }
+  }
+
+  /// Returns data for the selected period: DB data if available, test fallback otherwise.
+  List<DayStat> _getData() {
+    final source = _dbData ?? SleepStatsData.days;
+    final n = _dayCount;
+    if (n >= source.length) return source;
+    return source.sublist(source.length - n);
   }
 
   /// Staggered animation for item [index] out of [total].
@@ -72,12 +97,15 @@ class _StatisticsScreenState extends State<StatisticsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final data = SleepStatsData.lastDays(_dayCount);
+    final data = _getData();
 
     // For average score: current 7 vs previous 7
-    final current7 = SleepStatsData.lastDays(7);
-    final previous7 = SleepStatsData.days.length >= 14
-        ? SleepStatsData.days.sublist(0, 7)
+    final source = _dbData ?? SleepStatsData.days;
+    final current7 = source.length >= 7
+        ? source.sublist(source.length - 7)
+        : source;
+    final previous7 = source.length >= 14
+        ? source.sublist(source.length - 14, source.length - 7)
         : current7;
     final currentAvg = SleepStatsData.averageScore(current7);
     final previousAvg = SleepStatsData.averageScore(previous7);

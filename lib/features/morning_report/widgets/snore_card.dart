@@ -3,8 +3,13 @@ import '../../../core/theme/app_colors.dart';
 import 'sleep_card.dart';
 
 /// Card showing snore percentage and hourly mini bar chart.
+///
+/// When [snorePercent] is provided, shows real data.
+/// Otherwise, uses hardcoded test values.
 class SnoreCard extends StatelessWidget {
-  const SnoreCard({super.key});
+  final int? snorePercent;
+
+  const SnoreCard({super.key, this.snorePercent});
 
   // Test data: snore intensity per hour (0-1), 23:00 → 06:00
   static const _hourlySnore = [0.0, 0.05, 0.18, 0.35, 0.12, 0.08, 0.22, 0.04];
@@ -12,6 +17,11 @@ class SnoreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pct = snorePercent ?? 12;
+
+    // Scale test hourly bars proportionally if real data
+    final scaleFactor = snorePercent != null ? pct / 12.0 : 1.0;
+
     return SleepCard(
       title: 'Храп',
       child: Column(
@@ -20,7 +30,7 @@ class SnoreCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                '12%',
+                '$pct%',
                 style: TextStyle(
                   fontFamily: 'Montserrat',
                   fontSize: 28,
@@ -46,7 +56,7 @@ class SnoreCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: List.generate(_hourlySnore.length, (i) {
-                final h = _hourlySnore[i];
+                final h = (_hourlySnore[i] * scaleFactor).clamp(0.0, 1.0);
                 return Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 3),

@@ -5,6 +5,8 @@ import '../../core/constants/app_durations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../widgets/gradient_background.dart';
+import '../../models/sleep_session.dart';
+import '../morning_report/morning_report_screen.dart';
 import '../sleep_tracking/sleep_tracking_screen.dart';
 import 'widgets/start_button.dart';
 import 'widgets/time_picker_sheet.dart';
@@ -88,13 +90,22 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 
-  void _onStart() {
-    Navigator.of(context).push(
+  Future<void> _onStart() async {
+    final session = await Navigator.of(context).push<SleepSession>(
       MaterialPageRoute(
         builder: (_) => SleepTrackingScreen(
           alarmTime: _alarmTime,
           wakeWindow: _wakeWindow,
         ),
+      ),
+    );
+
+    if (!mounted) return;
+
+    // Navigate to morning report with session data (or test data if null)
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MorningReportScreen(session: session),
       ),
     );
   }

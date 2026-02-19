@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hive/hive.dart';
+import 'package:sleepwise/data/models/sleep_session_model.dart';
+import 'package:sleepwise/data/models/settings_model.dart';
 
 /// Automatically called by the Flutter test framework before every test file.
 /// Loads bundled project fonts so golden screenshots render real glyphs
@@ -10,7 +13,22 @@ import 'package:flutter_test/flutter_test.dart';
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   await _loadFonts();
+  await _initHive();
   await testMain();
+}
+
+Future<void> _initHive() async {
+  final tempDir = Directory.systemTemp.createTempSync('sleepwise_test_');
+  Hive.init(tempDir.path);
+  if (!Hive.isAdapterRegistered(sleepPhaseModelTypeId)) {
+    Hive.registerAdapter(SleepPhaseModelAdapter());
+  }
+  if (!Hive.isAdapterRegistered(sleepSessionModelTypeId)) {
+    Hive.registerAdapter(SleepSessionModelAdapter());
+  }
+  if (!Hive.isAdapterRegistered(settingsModelTypeId)) {
+    Hive.registerAdapter(SettingsModelAdapter());
+  }
 }
 
 Future<void> _loadFonts() async {
