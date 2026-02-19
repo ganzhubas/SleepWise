@@ -280,5 +280,24 @@
 
   "tabAlarm": "Будильник",
   "tabStatistics": "Статистика",
-  "tabSettings": "Настройки"
+  "tabSettings": "Настройки",
+
+  "emptyStatsTitle": "Пока нет данных",
+  "emptyStatsSubtitle": "Установите первый будильник,\nчтобы увидеть статистику сна",
+  "emptyStatsButton": "Установить будильник",
+
+  "noMicTitle": "Нет доступа к микрофону",
+  "noMicSubtitle": "Без микрофона анализ сна невозможен.\nРазрешите доступ в настройках устройства.",
+  "noMicButton": "Открыть настройки",
+
+  "audioError": "Ошибка звука — будильник сработает с вибрацией",
+  "lowBatteryTitle": "Низкий заряд батареи",
+  "lowBatteryMessage": "Заряд батареи {percent}%. Подключите зарядное устройство перед началом отслеживания сна для надёжной работы будильника.",
+  "@lowBatteryMessage": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "lowBatteryProceed": "Всё равно начать",
+  "lowBatteryCharge": "Поставить на зарядку"
 }

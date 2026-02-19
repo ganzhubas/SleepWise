@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/transitions/page_transitions.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/onboarding/permissions_screen.dart';
 import '../features/sleep_tracking/sleep_tracking_screen.dart';
@@ -24,16 +25,16 @@ class AppRouter {
       case onboarding:
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case permissions:
-        return MaterialPageRoute(builder: (_) => const PermissionsScreen());
+        return FadeScaleRoute(page: const PermissionsScreen());
       case home:
       case alarm:
-        return MaterialPageRoute(builder: (_) => const HomeShell());
+        return FadeScaleRoute(page: const HomeShell());
       case sleepTracking:
-        return MaterialPageRoute(builder: (_) => const SleepTrackingScreen());
+        return FadeToBlackRoute(page: const SleepTrackingScreen());
       case wakeUp:
-        return MaterialPageRoute(builder: (_) => const WakeUpScreen());
+        return DawnRoute(page: const WakeUpScreen());
       case morningReport:
-        return MaterialPageRoute(builder: (_) => const MorningReportScreen());
+        return SlideUpRoute(page: const MorningReportScreen());
       default:
         return MaterialPageRoute(builder: (_) => const HomeShell());
     }

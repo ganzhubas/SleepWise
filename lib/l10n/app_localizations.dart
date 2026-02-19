@@ -1182,6 +1182,72 @@ abstract class L {
   /// In ru, this message translates to:
   /// **'Настройки'**
   String get tabSettings;
+
+  /// No description provided for @emptyStatsTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Пока нет данных'**
+  String get emptyStatsTitle;
+
+  /// No description provided for @emptyStatsSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Установите первый будильник,\nчтобы увидеть статистику сна'**
+  String get emptyStatsSubtitle;
+
+  /// No description provided for @emptyStatsButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Установить будильник'**
+  String get emptyStatsButton;
+
+  /// No description provided for @noMicTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет доступа к микрофону'**
+  String get noMicTitle;
+
+  /// No description provided for @noMicSubtitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Без микрофона анализ сна невозможен.\nРазрешите доступ в настройках устройства.'**
+  String get noMicSubtitle;
+
+  /// No description provided for @noMicButton.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть настройки'**
+  String get noMicButton;
+
+  /// No description provided for @audioError.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ошибка звука — будильник сработает с вибрацией'**
+  String get audioError;
+
+  /// No description provided for @lowBatteryTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Низкий заряд батареи'**
+  String get lowBatteryTitle;
+
+  /// No description provided for @lowBatteryMessage.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заряд батареи {percent}%. Подключите зарядное устройство перед началом отслеживания сна для надёжной работы будильника.'**
+  String lowBatteryMessage(int percent);
+
+  /// No description provided for @lowBatteryProceed.
+  ///
+  /// In ru, this message translates to:
+  /// **'Всё равно начать'**
+  String get lowBatteryProceed;
+
+  /// No description provided for @lowBatteryCharge.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поставить на зарядку'**
+  String get lowBatteryCharge;
 }
 
 class _LDelegate extends LocalizationsDelegate<L> {

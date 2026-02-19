@@ -36,17 +36,29 @@ class _StatisticsScreenState extends State<StatisticsScreen>
     _loadData();
   }
 
+  bool _hasRealData = false;
+
   Future<void> _loadData() async {
     try {
       final sessions = await _sleepRepo.getLastSessions(90);
-      if (mounted && sessions.isNotEmpty) {
+      if (mounted) {
         setState(() {
-          _dbData = SleepStatsData.fromModels(sessions);
+          _hasRealData = sessions.isNotEmpty;
+          if (sessions.isNotEmpty) {
+            _dbData = SleepStatsData.fromModels(sessions);
+          }
         });
       }
     } catch (_) {
       // DB unavailable — keep using test data
     }
+  }
+
+  Future<void> _onRefresh() async {
+    await _loadData();
+    _animController
+      ..reset()
+      ..forward();
   }
 
   @override
@@ -153,71 +165,117 @@ class _StatisticsScreenState extends State<StatisticsScreen>
 
             const SizedBox(height: AppDimensions.paddingM),
 
-            // Scrollable content
+            // Scrollable content with pull-to-refresh
             Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingM,
-                ),
-                child: Column(
-                  children: [
-                    // Average score
-                    _StaggeredItem(
-                      animation: _stagger(0, totalItems),
-                      child: AverageScoreCard(
-                        currentAvg: currentAvg,
-                        previousAvg: previousAvg,
-                        animation: _stagger(0, totalItems),
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingM),
-
-                    // Daily score bar chart
-                    _StaggeredItem(
-                      animation: _stagger(1, totalItems),
-                      child: DailyScoreChart(
-                        data: data,
-                        animation: _stagger(1, totalItems),
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingM),
-
-                    // Sleep duration line chart
-                    _StaggeredItem(
-                      animation: _stagger(2, totalItems),
-                      child: SleepDurationChart(
-                        data: data,
-                        animation: _stagger(2, totalItems),
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingM),
-
-                    // Bedtime pattern chart
-                    _StaggeredItem(
-                      animation: _stagger(3, totalItems),
-                      child: BedtimeChart(
-                        data: data,
-                        animation: _stagger(3, totalItems),
-                      ),
-                    ),
-
-                    const SizedBox(height: AppDimensions.paddingL),
-                  ],
-                ),
+              child: RefreshIndicator(
+                onRefresh: _onRefresh,
+                color: AppColors.calmBlue,
+                backgroundColor: AppColors.darkSurface,
+                child: _hasRealData || _dbData != null
+                    ? _buildCharts(l, data, currentAvg, previousAvg, totalItems)
+                    : _buildEmptyState(l),
               ),
             ),
 
             // Summary cards (outside scroll, pinned at bottom)
-            _StaggeredItem(
-              animation: _stagger(5, totalItems),
-              child: SummaryCards(data: data),
-            ),
+            if (_hasRealData || _dbData != null)
+              _StaggeredItem(
+                animation: _stagger(5, totalItems),
+                child: SummaryCards(data: data),
+              ),
 
             const SizedBox(height: AppDimensions.paddingS),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCharts(L l, List<DayStat> data, double currentAvg,
+      double previousAvg, int totalItems) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.paddingM,
+      ),
+      child: Column(
+        children: [
+          _StaggeredItem(
+            animation: _stagger(0, totalItems),
+            child: AverageScoreCard(
+              currentAvg: currentAvg,
+              previousAvg: previousAvg,
+              animation: _stagger(0, totalItems),
+            ),
+          ),
+          const SizedBox(height: AppDimensions.paddingM),
+          _StaggeredItem(
+            animation: _stagger(1, totalItems),
+            child: DailyScoreChart(
+              data: data,
+              animation: _stagger(1, totalItems),
+            ),
+          ),
+          const SizedBox(height: AppDimensions.paddingM),
+          _StaggeredItem(
+            animation: _stagger(2, totalItems),
+            child: SleepDurationChart(
+              data: data,
+              animation: _stagger(2, totalItems),
+            ),
+          ),
+          const SizedBox(height: AppDimensions.paddingM),
+          _StaggeredItem(
+            animation: _stagger(3, totalItems),
+            child: BedtimeChart(
+              data: data,
+              animation: _stagger(3, totalItems),
+            ),
+          ),
+          const SizedBox(height: AppDimensions.paddingL),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(L l) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.5,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.nights_stay_rounded,
+              size: 72,
+              color: AppColors.calmBlue.withValues(alpha: 0.3),
+            ),
+            const SizedBox(height: AppDimensions.paddingL),
+            Text(
+              l.emptyStatsTitle,
+              style: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: AppColors.moonlight.withValues(alpha: 0.7),
+              ),
+            ),
+            const SizedBox(height: AppDimensions.paddingS),
+            Text(
+              l.emptyStatsSubtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                height: 1.5,
+                color: AppColors.moonlight.withValues(alpha: 0.4),
+              ),
+            ),
           ],
         ),
       ),

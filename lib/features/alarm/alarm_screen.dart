@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/constants/app_durations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/transitions/page_transitions.dart';
 import '../../widgets/gradient_background.dart';
 import '../../models/sleep_session.dart';
 import '../../services/notification_service.dart';
@@ -93,15 +95,95 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 
+  Future<int> _getBatteryLevel() async {
+    try {
+      const channel = MethodChannel('dev.fluttercommunity.plus/battery');
+      final level = await channel.invokeMethod<int>('getBatteryLevel');
+      return level ?? 100;
+    } catch (_) {
+      return 100;
+    }
+  }
+
+  Future<bool> _checkBatteryAndConfirm() async {
+    final level = await _getBatteryLevel();
+    if (level >= 20 || !mounted) return true;
+
+    final l = L.of(context);
+    final proceed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.darkSurface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.battery_alert_rounded,
+                color: AppColors.warning, size: 24),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l.lowBatteryTitle,
+                style: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 17,
+                  color: AppColors.moonlight,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          l.lowBatteryMessage(level),
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 14,
+            height: 1.5,
+            color: AppColors.moonlight.withValues(alpha: 0.7),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              l.lowBatteryCharge,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: AppColors.moonlight.withValues(alpha: 0.5),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              l.lowBatteryProceed,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                color: AppColors.calmBlue,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    return proceed == true;
+  }
+
   Future<void> _onStart() async {
+    // Check battery before starting
+    if (!await _checkBatteryAndConfirm()) return;
+
     // Schedule fallback alarm at upper bound of wake window (safety net)
     await NotificationService.instance.scheduleFallbackAlarm(
       alarmTime: _alarmTime,
     );
 
     final session = await Navigator.of(context).push<SleepSession>(
-      MaterialPageRoute(
-        builder: (_) => SleepTrackingScreen(
+      FadeToBlackRoute(
+        page: SleepTrackingScreen(
           alarmTime: _alarmTime,
           wakeWindow: _wakeWindow,
         ),
@@ -112,9 +194,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
     // Navigate to morning report with session data (or test data if null)
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => MorningReportScreen(session: session),
-      ),
+      SlideUpRoute(page: MorningReportScreen(session: session)),
     );
   }
 

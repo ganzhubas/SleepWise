@@ -592,4 +592,41 @@ class LEn extends L {
 
   @override
   String get tabSettings => 'Settings';
+
+  @override
+  String get emptyStatsTitle => 'No data yet';
+
+  @override
+  String get emptyStatsSubtitle =>
+      'Set your first alarm\nto see sleep statistics';
+
+  @override
+  String get emptyStatsButton => 'Set alarm';
+
+  @override
+  String get noMicTitle => 'No microphone access';
+
+  @override
+  String get noMicSubtitle =>
+      'Sleep analysis requires microphone access.\nPlease allow it in device settings.';
+
+  @override
+  String get noMicButton => 'Open settings';
+
+  @override
+  String get audioError => 'Sound error — alarm will use vibration instead';
+
+  @override
+  String get lowBatteryTitle => 'Low battery';
+
+  @override
+  String lowBatteryMessage(int percent) {
+    return 'Battery is at $percent%. Please plug in your charger before starting sleep tracking to ensure the alarm works reliably.';
+  }
+
+  @override
+  String get lowBatteryProceed => 'Start anyway';
+
+  @override
+  String get lowBatteryCharge => 'Plug in charger';
 }

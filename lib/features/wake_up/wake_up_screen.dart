@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/transitions/page_transitions.dart';
 import '../../l10n/app_localizations.dart';
 import '../morning_report/morning_report_screen.dart';
 import 'widgets/sunrise_background.dart';
@@ -79,8 +80,22 @@ class _WakeUpScreenState extends State<WakeUpScreen>
       await p.setVolume(0);
       await p.play(AssetSource('audio/alarm_tone.mp3'));
     } catch (_) {
-      // Audio not available (test environment / missing asset)
+      // Audio not available — fall back to vibration only
       _player = null;
+      if (mounted) {
+        try {
+          final l = L.of(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l.audioError, style: const TextStyle(fontFamily: 'Inter')),
+              backgroundColor: const Color(0xFF1B2838),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        } catch (_) {
+          // No ScaffoldMessenger available (e.g. test environment)
+        }
+      }
       return;
     }
 
@@ -129,7 +144,7 @@ class _WakeUpScreenState extends State<WakeUpScreen>
     // Navigate to morning report, replacing the entire wake-up stack
     if (mounted) {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const MorningReportScreen()),
+        SlideUpRoute(page: const MorningReportScreen()),
         (route) => route.isFirst,
       );
     }

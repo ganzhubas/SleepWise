@@ -4,6 +4,7 @@ import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../widgets/gradient_background.dart';
 import '../../widgets/sleep_button.dart';
+import '../../core/transitions/page_transitions.dart';
 import 'permissions_screen.dart';
 import 'widgets/chart_illustration.dart';
 import 'widgets/moon_illustration.dart';
@@ -35,7 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     await prefs.setBool(_prefKey, true);
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const PermissionsScreen()),
+        FadeScaleRoute(page: const PermissionsScreen()),
       );
     }
   }

@@ -593,4 +593,41 @@ class LRu extends L {
 
   @override
   String get tabSettings => 'Настройки';
+
+  @override
+  String get emptyStatsTitle => 'Пока нет данных';
+
+  @override
+  String get emptyStatsSubtitle =>
+      'Установите первый будильник,\nчтобы увидеть статистику сна';
+
+  @override
+  String get emptyStatsButton => 'Установить будильник';
+
+  @override
+  String get noMicTitle => 'Нет доступа к микрофону';
+
+  @override
+  String get noMicSubtitle =>
+      'Без микрофона анализ сна невозможен.\nРазрешите доступ в настройках устройства.';
+
+  @override
+  String get noMicButton => 'Открыть настройки';
+
+  @override
+  String get audioError => 'Ошибка звука — будильник сработает с вибрацией';
+
+  @override
+  String get lowBatteryTitle => 'Низкий заряд батареи';
+
+  @override
+  String lowBatteryMessage(int percent) {
+    return 'Заряд батареи $percent%. Подключите зарядное устройство перед началом отслеживания сна для надёжной работы будильника.';
+  }
+
+  @override
+  String get lowBatteryProceed => 'Всё равно начать';
+
+  @override
+  String get lowBatteryCharge => 'Поставить на зарядку';
 }

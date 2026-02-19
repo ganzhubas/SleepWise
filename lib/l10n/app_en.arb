@@ -205,5 +205,24 @@
 
   "tabAlarm": "Alarm",
   "tabStatistics": "Statistics",
-  "tabSettings": "Settings"
+  "tabSettings": "Settings",
+
+  "emptyStatsTitle": "No data yet",
+  "emptyStatsSubtitle": "Set your first alarm\nto see sleep statistics",
+  "emptyStatsButton": "Set alarm",
+
+  "noMicTitle": "No microphone access",
+  "noMicSubtitle": "Sleep analysis requires microphone access.\nPlease allow it in device settings.",
+  "noMicButton": "Open settings",
+
+  "audioError": "Sound error — alarm will use vibration instead",
+  "lowBatteryTitle": "Low battery",
+  "lowBatteryMessage": "Battery is at {percent}%. Please plug in your charger before starting sleep tracking to ensure the alarm works reliably.",
+  "@lowBatteryMessage": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+  "lowBatteryProceed": "Start anyway",
+  "lowBatteryCharge": "Plug in charger"
 }

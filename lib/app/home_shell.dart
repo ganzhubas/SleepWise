@@ -198,9 +198,14 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     final l = L.of(context);
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        switchInCurve: Curves.easeOut,
+        switchOutCurve: Curves.easeIn,
+        child: KeyedSubtree(
+          key: ValueKey(_currentIndex),
+          child: _screens[_currentIndex],
+        ),
       ),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(

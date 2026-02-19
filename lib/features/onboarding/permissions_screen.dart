@@ -3,6 +3,8 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/app_colors.dart';
 import '../../widgets/gradient_background.dart';
+import '../../app/home_shell.dart';
+import '../../core/transitions/page_transitions.dart';
 import '../../widgets/sleep_button.dart';
 import 'widgets/bell_illustration.dart';
 import 'widgets/microphone_illustration.dart';
@@ -76,7 +78,9 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
 
   void _goToApp() {
     if (!mounted) return;
-    Navigator.of(context).pushReplacementNamed('/alarm');
+    Navigator.of(context).pushReplacement(
+      FadeScaleRoute(page: const HomeShell()),
+    );
   }
 
   @override
